@@ -69,6 +69,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -91,15 +92,71 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
-  /* USER CODE END 2 */
+
+	/* Check and Clear the Wakeup flag if already set*/
+
+/* Check the status of standby flag SB*/
+if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
+{ 
+/* Power-ON routine */ 
+	HAL_PWR_EnableBkUpAccess();
+__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+
+} 
+else 
+{ 
+HAL_Delay(250);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(250);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+HAL_Delay(250);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(250);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+HAL_Delay(250);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(250);
+//	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+	//HAL_PWR_EnterSTANDBYMode();
+} 
+	
+	
+	
+
+
+
+
+HAL_Delay(5000);
+
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+HAL_Delay(500);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(500);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+HAL_Delay(500);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(500);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+HAL_Delay(500);
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+HAL_Delay(500);
+
+
+
+
+
+uint8_t str[9]={0};
+/* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
-
+ //HAL_UART_Receive_IT(&huart1,(uint8_t*) str,8);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -158,7 +215,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -199,6 +256,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 

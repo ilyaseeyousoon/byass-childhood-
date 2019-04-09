@@ -27,7 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+uint8_t tesst[150]={0};
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -56,7 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -196,6 +196,29 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f1xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+   // if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
+  //  {
+	 HAL_UART_IRQHandler(&huart1);
+
+//HAL_UART_Receive(&huart1, tesst, 8,100);
+	HAL_UART_Receive_IT(&huart1, tesst+2, tesst[0]- '0'); 
+ 
+//__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+//printf("%d",huart1.RxXferSize);
+   // }
+  /* USER CODE END USART1_IRQn 0 */
+ 
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 

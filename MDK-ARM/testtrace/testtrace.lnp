@@ -1,0 +1,24 @@
+--cpu Cortex-M3
+"testtrace\startup_stm32f103xb.o"
+"testtrace\main.o"
+"testtrace\stm32f1xx_it.o"
+"testtrace\stm32f1xx_hal_msp.o"
+"testtrace\stm32f1xx_hal_gpio_ex.o"
+"testtrace\stm32f1xx_hal_tim.o"
+"testtrace\stm32f1xx_hal_tim_ex.o"
+"testtrace\stm32f1xx_hal_uart.o"
+"testtrace\stm32f1xx_hal.o"
+"testtrace\stm32f1xx_hal_rcc.o"
+"testtrace\stm32f1xx_hal_rcc_ex.o"
+"testtrace\stm32f1xx_hal_gpio.o"
+"testtrace\stm32f1xx_hal_dma.o"
+"testtrace\stm32f1xx_hal_cortex.o"
+"testtrace\stm32f1xx_hal_pwr.o"
+"testtrace\stm32f1xx_hal_flash.o"
+"testtrace\stm32f1xx_hal_flash_ex.o"
+"testtrace\system_stm32f1xx.o"
+"testtrace\retarget_io.o"
+--library_type=microlib --strict --scatter "testtrace\testtrace.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "testtrace.map" -o testtrace\testtrace.axf
