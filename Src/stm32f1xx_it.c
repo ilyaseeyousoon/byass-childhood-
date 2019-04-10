@@ -23,11 +23,17 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-uint8_t tesst[150]={0};
+
+uint8_t tesst[10]={0};
+extern bool  AdcRequesStart;
+char carray[sizeof(tesst)];
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -253,15 +259,29 @@ extern UART_HandleTypeDef huart1;
   */
 void USART1_IRQHandler(void)
 {
-  /* USER CODE BEGIN USART1_IRQn 0 */
-   // if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
-  //  {
-	 HAL_UART_IRQHandler(&huart1);
 
-//HAL_UART_Receive(&huart1, tesst, 8,100);
-	HAL_UART_Receive_IT(&huart1, tesst+2, tesst[0]- '0'); 
- 
-//__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+  /* USER CODE BEGIN USART1_IRQn 0 */
+  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
+   {
+	 
+	//HAL_UART_IRQHandler(&huart1);
+HAL_UART_Receive(&huart1, tesst, sizeof(tesst),500);
+	memcpy(carray, tesst, sizeof(tesst));
+
+	//HAL_UART_Receive_IT(&huart1, tesst+2, tesst[0]- '0'); 
+	if (strstr(carray, "help") != NULL) {
+    // contains
+		AdcRequesStart=true;
+}
+		if (strstr(carray, "hey") != NULL) {
+    // contains
+			printf("Fu you");
+			AdcRequesStart=true;
+}
+		
+	//HAL_UART_IRQHandler(&huart1);
+	}
+__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 //printf("%d",huart1.RxXferSize);
    // }
   /* USER CODE END USART1_IRQn 0 */
@@ -269,6 +289,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+
 }
 
 /* USER CODE BEGIN 1 */

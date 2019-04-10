@@ -30,7 +30,7 @@
 #else
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
-
+#include <stdbool.h>
 
 /* USER CODE END Includes */
 
@@ -57,6 +57,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 uint32_t ADC_BUF[3];
+bool  AdcRequesStart=false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,9 +67,10 @@ static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
+uint16_t j=0;
  char *str;
+/* USER CODE END PFP */
+
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
@@ -79,7 +81,7 @@ uint32_t val[3];
 	val[2]=ADC_BUF[2];
 	//sprintf(str, "Bt=%d Y=%d X=%d \r\n", val[0],val[1],val[2]);
 	//HAL_UART_Transmit(&huart1,(uint8_t*)str,strlen(str),1000);
-	printf("Bt=%d Y=%d X=%d \r\n", val[0],val[1],val[2]);
+	printf("%d:Bt=%d Y=%d X=%d \r\n",j, val[0],val[1],val[2]);
 }
 
 
@@ -126,7 +128,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-//__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
 HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
 	HAL_ADC_Start_IT(&hadc1);
@@ -186,8 +188,17 @@ HAL_Delay(500);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		if(AdcRequesStart==true && j<=1000){
 		HAL_ADC_Start_IT(&hadc1);
-		HAL_Delay(500);
+		//HAL_Delay(100);
+			
+			j++;
+		}
+		else{
+			j=0;
+			AdcRequesStart=false;
+			HAL_ADC_Stop(&hadc1);
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -273,7 +284,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -343,7 +354,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
