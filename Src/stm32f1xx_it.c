@@ -56,6 +56,8 @@ uint8_t tesst[150]={0};
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_adc1;
+extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
@@ -198,6 +200,55 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles DMA1 channel1 global interrupt.
+  */
+void DMA1_Channel1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_adc1);
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles ADC1 and ADC2 global interrupts.
+  */
+void ADC1_2_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_2_IRQn 0 */
+	/*
+	uint16_t ADC_Data[3] = {0};
+uint16_t ADC_Data2 = 0;
+uint16_t ADC_Data3 = 0;
+uint16_t ADC_Data4 = 0;
+uint32_t h=0;
+uint8_t gg=0;
+char str[25];
+extern ADC_HandleTypeDef hadc1;
+extern UART_HandleTypeDef huart1;
+	*/
+// ADC_Data2 = HAL_ADC_GetValue(&hadc1);
+// ADC_Data3 = HAL_ADC_GetValue(&hadc1);
+// ADC_Data4 = HAL_ADC_GetValue(&hadc1);
+
+	/*
+	if(h%100000==0){
+		
+	//	sprintf(str, "X=%d But=%d Y=%d \r\n", ADC_Data[0],ADC_Data[1],ADC_Data[2]);
+	HAL_UART_Transmit(&huart1,(uint8_t*)str,25,1000);
+		h=0;
+		*/
+  /* USER CODE END ADC1_2_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_2_IRQn 1 */
+
+  /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART1 global interrupt.
   */
 void USART1_IRQHandler(void)
@@ -214,7 +265,7 @@ void USART1_IRQHandler(void)
 //printf("%d",huart1.RxXferSize);
    // }
   /* USER CODE END USART1_IRQn 0 */
- 
+ //HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */

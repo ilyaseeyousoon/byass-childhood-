@@ -4,6 +4,8 @@
 "testtrace\stm32f1xx_it.o"
 "testtrace\stm32f1xx_hal_msp.o"
 "testtrace\stm32f1xx_hal_gpio_ex.o"
+"testtrace\stm32f1xx_hal_adc.o"
+"testtrace\stm32f1xx_hal_adc_ex.o"
 "testtrace\stm32f1xx_hal_tim.o"
 "testtrace\stm32f1xx_hal_tim_ex.o"
 "testtrace\stm32f1xx_hal_uart.o"
@@ -17,7 +19,6 @@
 "testtrace\stm32f1xx_hal_flash.o"
 "testtrace\stm32f1xx_hal_flash_ex.o"
 "testtrace\system_stm32f1xx.o"
-"testtrace\retarget_io.o"
 --library_type=microlib --strict --scatter "testtrace\testtrace.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
