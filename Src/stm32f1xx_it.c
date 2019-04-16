@@ -279,6 +279,15 @@ HAL_UART_Receive(&huart1, tesst, sizeof(tesst),500);
 			AdcRequesStart=true;
 }
 		
+		if (strstr(carray, "whoami") != NULL) {
+		   printf("JOYSTEAK %08x-%08x-%08x\r\n",
+                *((unsigned long *)0x1FFFF7E8),
+                *((unsigned long *)0x1FFFF7EC),
+                *((unsigned long *)0x1FFFF7F0) );
+		
+		
+		}
+		
 	//HAL_UART_IRQHandler(&huart1);
 	}
 __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);

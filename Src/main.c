@@ -37,6 +37,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -69,6 +70,13 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t j=0;
  char *str;
+uint32_t id2[3]={0};
+
+
+ 
+
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -82,6 +90,7 @@ uint32_t val[3];
 	//sprintf(str, "Bt=%d Y=%d X=%d \r\n", val[0],val[1],val[2]);
 	//HAL_UART_Transmit(&huart1,(uint8_t*)str,strlen(str),1000);
 	printf("%d:Bt=%d Y=%d X=%d \r\n",j, val[0],val[1],val[2]);
+
 }
 
 
@@ -177,6 +186,10 @@ HAL_Delay(500);
 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 HAL_Delay(500);
 */
+
+
+  //HAL_GetUID(id2);
+	//printf("%d:Bt=%x Y=%x X=%x \r\n",j, id2[0],id2[1],id2[2]);
 
 
 
