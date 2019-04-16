@@ -137,55 +137,46 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+	
+	
+	
+		  HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
+{ 
+/* Power-ON routine */
+printf("Wakeup");	
+	//HAL_PWR_EnableBkUpAccess();
+__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+
+	
+} 
+else 
+{ 
+	/*
+printf("Bye");	
+ 
+
+	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+	HAL_PWR_EnterSTANDBYMode();
+	*/
+} 
+
+
 __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
 HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
 	HAL_ADC_Start_IT(&hadc1);
 	/* Check and Clear the Wakeup flag if already set*/
 
+
+HAL_Delay(10000);
 /* Check the status of standby flag SB*/
-if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
-{ 
-/* Power-ON routine */ 
-	HAL_PWR_EnableBkUpAccess();
-__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
-__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 
-} 
-else 
-{ 
-/*
-HAL_Delay(250);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(250);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-HAL_Delay(250);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(250);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-HAL_Delay(250);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(250);
-//	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
-	//HAL_PWR_EnterSTANDBYMode();
-	*/
-} 
-/*
-HAL_Delay(5000);
 
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-HAL_Delay(500);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(500);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-HAL_Delay(500);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(500);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-HAL_Delay(500);
-HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-HAL_Delay(500);
-*/
+
+
+
 
 
   //HAL_GetUID(id2);
@@ -297,7 +288,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -367,7 +358,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
@@ -399,9 +390,13 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+  //HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 

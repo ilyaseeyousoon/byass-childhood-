@@ -190,7 +190,10 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+	if(HAL_GetTick()%2000==0 && __HAL_PWR_GET_FLAG(PWR_FLAG_SB) == RESET){
+HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+ HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	}
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -204,6 +207,34 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f1xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line0 interrupt.
+  */
+void EXTI0_IRQHandler(void)
+{
+	  HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+
+
+printf("Bye");	
+ 
+
+	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+	__HAL_PWR_CLEAR_FLAG(PWR_CSR_WUF);
+	HAL_PWR_EnterSTANDBYMode();
+
+
+  
+
+ // HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+ // HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+  /* USER CODE END EXTI0_IRQn 0 */
+  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
+
+  /* USER CODE END EXTI0_IRQn 1 */
+}
 
 /**
   * @brief This function handles DMA1 channel1 global interrupt.
@@ -225,28 +256,8 @@ void DMA1_Channel1_IRQHandler(void)
 void ADC1_2_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
-	/*
-	uint16_t ADC_Data[3] = {0};
-uint16_t ADC_Data2 = 0;
-uint16_t ADC_Data3 = 0;
-uint16_t ADC_Data4 = 0;
-uint32_t h=0;
-uint8_t gg=0;
-char str[25];
-extern ADC_HandleTypeDef hadc1;
-extern UART_HandleTypeDef huart1;
-	*/
-// ADC_Data2 = HAL_ADC_GetValue(&hadc1);
-// ADC_Data3 = HAL_ADC_GetValue(&hadc1);
-// ADC_Data4 = HAL_ADC_GetValue(&hadc1);
 
-	/*
-	if(h%100000==0){
-		
-	//	sprintf(str, "X=%d But=%d Y=%d \r\n", ADC_Data[0],ADC_Data[1],ADC_Data[2]);
-	HAL_UART_Transmit(&huart1,(uint8_t*)str,25,1000);
-		h=0;
-		*/
+
   /* USER CODE END ADC1_2_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
@@ -259,7 +270,6 @@ extern UART_HandleTypeDef huart1;
   */
 void USART1_IRQHandler(void)
 {
-
   /* USER CODE BEGIN USART1_IRQn 0 */
   if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
    {
@@ -294,11 +304,10 @@ __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 //printf("%d",huart1.RxXferSize);
    // }
   /* USER CODE END USART1_IRQn 0 */
- //HAL_UART_IRQHandler(&huart1);
+  HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
-
 }
 
 /* USER CODE BEGIN 1 */
