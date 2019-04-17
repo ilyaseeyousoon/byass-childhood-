@@ -64,6 +64,7 @@ char carray[sizeof(tesst)];
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
+extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
@@ -213,7 +214,6 @@ HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
   */
 void EXTI0_IRQHandler(void)
 {
-	  HAL_NVIC_DisableIRQ(EXTI0_IRQn);
   /* USER CODE BEGIN EXTI0_IRQn 0 */
 
 
@@ -230,7 +230,7 @@ printf("Bye");
  // HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
  // HAL_NVIC_EnableIRQ(EXTI0_IRQn);
   /* USER CODE END EXTI0_IRQn 0 */
-  //HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
   /* USER CODE END EXTI0_IRQn 1 */
@@ -266,6 +266,20 @@ void ADC1_2_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART1 global interrupt.
   */
 void USART1_IRQHandler(void)
@@ -297,6 +311,13 @@ HAL_UART_Receive(&huart1, tesst, sizeof(tesst),500);
 		
 		
 		}
+		if (strstr(carray, "rgb") != NULL) {
+	
+		TIM4->CCR1=tesst[3];
+		TIM4->CCR2=tesst[4];
+		TIM4->CCR3=tesst[5];
+		}
+		
 		
 	//HAL_UART_IRQHandler(&huart1);
 	}

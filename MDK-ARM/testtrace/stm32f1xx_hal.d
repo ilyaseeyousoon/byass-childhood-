@@ -24,4 +24,6 @@ testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc
 testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash.h
 testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
+testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 testtrace\stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
