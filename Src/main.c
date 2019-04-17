@@ -174,7 +174,7 @@ HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
 
 
 
-HAL_Delay(10000);
+HAL_Delay(3000);
 
 
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
@@ -184,18 +184,65 @@ HAL_Delay(10000);
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+/*
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+     TIM4->CCR4=5;
 
-
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);
 HAL_Delay(3000);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+ //HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4);
+ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+ TIM4->CCR4=12;
+ HAL_Delay(3000);
+ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+   //MX_TIM4_Init();
+	 TIM4->CCR4=15;
+*/
 
+//TIM4->CCR4=250;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+		for(uint16_t l=0;l<=255;l++){
+
+		TIM4->CCR3=0;
+			TIM4->CCR2= 0;
+		TIM4->CCR1=l;
+		HAL_Delay(20);
+
+	  }
+				for(uint16_t l=0;l<=255;l++){
+
+		TIM4->CCR3=0;
+			TIM4->CCR2= l;
+		TIM4->CCR1=255;
+		HAL_Delay(20);
+
+	  }
+					for(uint16_t l=0;l<=255;l++){
+
+		TIM4->CCR3=l;
+			TIM4->CCR2= 255;
+		TIM4->CCR1=255;
+		HAL_Delay(20);
+
+	  }
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		if(AdcRequesStart==true && j<=1000){
 		HAL_ADC_Start_IT(&hadc1);
 		//HAL_Delay(100);
@@ -206,6 +253,31 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
 			j=0;
 			AdcRequesStart=false;
 			HAL_ADC_Stop(&hadc1);
+		}
+		
+		//TIM4->CCR1=100-(4096-ADC_BUF[2])*256/4096;
+	//	TIM4->CCR2=120-(4096-ADC_BUF[2])*256/4096;
+	//	TIM4->CCR3=150-(4096-ADC_BUF[2])*256/4096;
+		if(ADC_BUF[2]<3000)
+		{
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+		TIM4->CCR4=100;
+
+		}
+		else
+				if(ADC_BUF[2]>3100)
+		{
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+	TIM4->CCR4=100;
+	
+		}
+		else { TIM4->CCR4=0;
+		
+			  
+
+		
 		}
     /* USER CODE END WHILE */
 
@@ -362,7 +434,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 0;
+  htim4.Init.Prescaler = 20;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 255;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -480,7 +552,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -495,8 +567,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  /*Configure GPIO pins : PA4 PA11 PA12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_11|GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

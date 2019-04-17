@@ -318,6 +318,24 @@ HAL_UART_Receive(&huart1, tesst, sizeof(tesst),500);
 		TIM4->CCR3=tesst[5];
 		}
 		
+				if (strstr(carray, "mtr") != NULL) {
+	
+					if(tesst[4]==0x31){
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+					}else{
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+					}
+					if(tesst[5]==0x31){
+				 // TIM4->CCR4=15;
+         TIM4->CCR4=tesst[3];
+					}
+					else{TIM4->CCR4=0;
+
+					
+					}
+				
 		
 	//HAL_UART_IRQHandler(&huart1);
 	}
@@ -330,7 +348,7 @@ __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
   /* USER CODE END USART1_IRQn 1 */
 }
-
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
