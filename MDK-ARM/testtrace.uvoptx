@@ -316,7 +316,7 @@
         <Ww>
           <count>26</count>
           <WinNumber>1</WinNumber>
-          <ItemText>l</ItemText>
+          <ItemText>TIM4-&gt;CCR4,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

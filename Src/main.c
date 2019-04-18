@@ -94,6 +94,30 @@ uint32_t val[3];
 	//HAL_UART_Transmit(&huart1,(uint8_t*)str,strlen(str),1000);
 	printf("%d:Bt=%d Y=%d X=%d \r\n",j, val[0],val[1],val[2]);
 
+	
+	
+			if(ADC_BUF[2]<2900)
+		{
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+		TIM4->CCR4=100;
+
+		}
+		else
+				if(ADC_BUF[2]>3050)
+		{
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+	TIM4->CCR4=100;
+	
+		}
+		else { TIM4->CCR4=0;
+		
+			  
+
+		
+		}
+		
 }
 
 
@@ -208,7 +232,7 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+/*
 		for(uint16_t l=0;l<=255;l++){
 
 		TIM4->CCR3=0;
@@ -233,7 +257,7 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
 		HAL_Delay(20);
 
 	  }
-
+*/
 		
 		
 		
@@ -244,6 +268,7 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
 		
 		
 		if(AdcRequesStart==true && j<=1000){
+	//		while(__HAL_ADC_GET_FLAG(&hadc1,ADC_SR_EOC==RESET)){}
 		HAL_ADC_Start_IT(&hadc1);
 		//HAL_Delay(100);
 			
@@ -252,33 +277,14 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
 		else{
 			j=0;
 			AdcRequesStart=false;
+			
 			HAL_ADC_Stop(&hadc1);
 		}
 		
 		//TIM4->CCR1=100-(4096-ADC_BUF[2])*256/4096;
 	//	TIM4->CCR2=120-(4096-ADC_BUF[2])*256/4096;
 	//	TIM4->CCR3=150-(4096-ADC_BUF[2])*256/4096;
-		if(ADC_BUF[2]<3000)
-		{
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-		TIM4->CCR4=100;
 
-		}
-		else
-				if(ADC_BUF[2]>3100)
-		{
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-	TIM4->CCR4=100;
-	
-		}
-		else { TIM4->CCR4=0;
-		
-			  
-
-		
-		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -387,7 +393,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
