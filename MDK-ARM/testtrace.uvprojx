@@ -406,6 +406,16 @@
               <FileType>1</FileType>
               <FilePath>../Src/stm32f1xx_hal_msp.c</FilePath>
             </File>
+            <File>
+              <FileName>MotorLib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\MotorLib.c</FilePath>
+            </File>
+            <File>
+              <FileName>RgbLedLib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\RgbLedLib.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

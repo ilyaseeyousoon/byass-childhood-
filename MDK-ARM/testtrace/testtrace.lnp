@@ -3,6 +3,8 @@
 "testtrace\main.o"
 "testtrace\stm32f1xx_it.o"
 "testtrace\stm32f1xx_hal_msp.o"
+"testtrace\motorlib.o"
+"testtrace\rgbledlib.o"
 "testtrace\stm32f1xx_hal_gpio_ex.o"
 "testtrace\stm32f1xx_hal_adc.o"
 "testtrace\stm32f1xx_hal_adc_ex.o"

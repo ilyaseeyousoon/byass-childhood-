@@ -36,8 +36,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
-
+#include "MotorLib.h"
+#include "RgbLedLib.h"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -90,33 +90,12 @@ uint32_t val[3];
 	val[0]=ADC_BUF[0];
 	val[1]=ADC_BUF[1];
 	val[2]=ADC_BUF[2];
-	//sprintf(str, "Bt=%d Y=%d X=%d \r\n", val[0],val[1],val[2]);
-	//HAL_UART_Transmit(&huart1,(uint8_t*)str,strlen(str),1000);
+
 	printf("%d:Bt=%d Y=%d X=%d \r\n",j, val[0],val[1],val[2]);
 
 	
-	
-			if(ADC_BUF[2]<2900)
-		{
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-		TIM4->CCR4=100;
-
-		}
-		else
-				if(ADC_BUF[2]>3050)
-		{
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-	TIM4->CCR4=100;
-	
-		}
-		else { TIM4->CCR4=0;
+		MoveByJoystick(ADC_BUF[1]);
 		
-			  
-
-		
-		}
 		
 }
 
@@ -279,11 +258,9 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
 			AdcRequesStart=false;
 			
 			HAL_ADC_Stop(&hadc1);
+			MoveByJoystick(_JoystickZero);
 		}
-		
-		//TIM4->CCR1=100-(4096-ADC_BUF[2])*256/4096;
-	//	TIM4->CCR2=120-(4096-ADC_BUF[2])*256/4096;
-	//	TIM4->CCR3=150-(4096-ADC_BUF[2])*256/4096;
+	
 
     /* USER CODE END WHILE */
 
@@ -442,7 +419,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 20;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 255;
+  htim4.Init.Period = _MotorPwmPeriod;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
