@@ -1,5 +1,5 @@
-testtrace\motorlib.o: ..\Src\MotorLib.c
-testtrace\motorlib.o: ../Inc/MotorLib.h
+testtrace\motorlib.o: ..\mylibs\MotorLib.c
+testtrace\motorlib.o: ..\mylibs\MotorLib.h
 testtrace\motorlib.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 testtrace\motorlib.o: ../Inc/stm32f1xx_hal_conf.h
 testtrace\motorlib.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h

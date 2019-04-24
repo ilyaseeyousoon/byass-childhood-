@@ -154,7 +154,7 @@
           <Type>0</Type>
           <LineNumber>332</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134227764</Address>
+          <Address>134227804</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -164,22 +164,6 @@
           <Filename>../Src/stm32f1xx_it.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\testtrace\../Src/stm32f1xx_it.c\332</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>216</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134218668</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Src/stm32f1xx_it.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\testtrace\../Src/stm32f1xx_it.c\216</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -330,7 +314,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
@@ -347,7 +331,7 @@
         <aLa>0</aLa>
         <aPa1>0</aPa1>
         <AscS4>0</AscS4>
-        <aSer4>1</aSer4>
+        <aSer4>0</aSer4>
         <StkLoc>0</StkLoc>
         <TrcWin>0</TrcWin>
         <newCpu>0</newCpu>
@@ -462,7 +446,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Src\MotorLib.c</PathWithFileName>
+      <PathWithFileName>..\mylibs\MotorLib.c</PathWithFileName>
       <FilenameWithoutPath>MotorLib.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -474,7 +458,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Src\RgbLedLib.c</PathWithFileName>
+      <PathWithFileName>..\mylibs\RgbLedLib.c</PathWithFileName>
       <FilenameWithoutPath>RgbLedLib.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

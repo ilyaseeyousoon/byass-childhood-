@@ -1,5 +1,5 @@
-testtrace\rgbledlib.o: ..\Src\RgbLedLib.c
-testtrace\rgbledlib.o: ../Inc/RgbLedLib.h
+testtrace\rgbledlib.o: ..\mylibs\RgbLedLib.c
+testtrace\rgbledlib.o: ..\mylibs\RgbLedLib.h
 testtrace\rgbledlib.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 testtrace\rgbledlib.o: ../Inc/stm32f1xx_hal_conf.h
 testtrace\rgbledlib.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h
