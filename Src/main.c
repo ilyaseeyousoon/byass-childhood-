@@ -42,7 +42,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+//#define MODULE_MOTOR
+#define MODULE_RGBLED
+//#define MODULE_JOYSTICK
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -158,100 +160,53 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 
 	
 } 
-else 
-{ 
-	/*
-printf("Bye");	
- 
 
-	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
-	HAL_PWR_EnterSTANDBYMode();
-	*/
-} 
 
 
 __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
-HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
-	HAL_ADC_Start_IT(&hadc1);
+#ifdef MODULE_JOYSTICK
+				HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
+				HAL_ADC_Start_IT(&hadc1);
 
+#endif
 
 
 HAL_Delay(3000);
 
+#ifdef MODULE_MOTOR
+  
+        HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+#endif		
 
+#ifdef MODULE_RGBLED
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
-
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
-        HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
-/*
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-     TIM4->CCR4=5;
-
-HAL_Delay(3000);
- //HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4);
- HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
- TIM4->CCR4=12;
- HAL_Delay(3000);
- HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
-HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-   //MX_TIM4_Init();
-	 TIM4->CCR4=15;
-*/
-
-//TIM4->CCR4=250;
+#endif	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-/*
-		for(uint16_t l=0;l<=255;l++){
+#ifdef MODULE_RGBLED
 
-		TIM4->CCR3=0;
-			TIM4->CCR2= 0;
-		TIM4->CCR1=l;
-		HAL_Delay(20);
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=l; TIM4->CCR2= 0; TIM4->CCR3=255;	HAL_Delay(5);}// .0 0 255
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=0; TIM4->CCR2= l; TIM4->CCR3=255;	HAL_Delay(5);}// 0 .255 255
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=0; TIM4->CCR2= 255; TIM4->CCR3=l;	HAL_Delay(5);}// 0 255 .0
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=l; TIM4->CCR2= 255; TIM4->CCR3=0;	HAL_Delay(5);}// .255 255 0
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=255; TIM4->CCR2= l; TIM4->CCR3=0;	HAL_Delay(5);}//255 .0 0
 
-	  }
-				for(uint16_t l=0;l<=255;l++){
-
-		TIM4->CCR3=0;
-			TIM4->CCR2= l;
-		TIM4->CCR1=255;
-		HAL_Delay(20);
-
-	  }
-					for(uint16_t l=0;l<=255;l++){
-
-		TIM4->CCR3=l;
-			TIM4->CCR2= 255;
-		TIM4->CCR1=255;
-		HAL_Delay(20);
-
-	  }
-*/
+#endif
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		if(AdcRequesStart==true && j<=1000){
-	//		while(__HAL_ADC_GET_FLAG(&hadc1,ADC_SR_EOC==RESET)){}
-		HAL_ADC_Start_IT(&hadc1);
-		//HAL_Delay(100);
-			
-			j++;
+	
+#ifdef MODULE_JOYSTICK
+				if(AdcRequesStart==true && j<=1000){
+		HAL_ADC_Start_IT(&hadc1);		
+		j++;
 		}
 		else{
 			j=0;
@@ -259,35 +214,21 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
 			
 			HAL_ADC_Stop(&hadc1);
 			MoveByJoystick(_JoystickZero);
-		}
+		}	
+	#endif			
+		
+		
+		
+		
+		
+		
+
 	
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 		
-
-/*
-		for(i=0;i<=255;i++){
-				TIM4->CCR1=i;
-		TIM4->CCR2=0;
-		TIM4->CCR3=0;
-HAL_Delay(300);
-		}
-
-				for(i=0;i<=255;i++){
-				TIM4->CCR1=0;
-		TIM4->CCR2=i;
-		TIM4->CCR3=0;
-HAL_Delay(300);
-		}
-						for(i=0;i<=255;i++){
-				TIM4->CCR1=0;
-		TIM4->CCR2=0;
-		TIM4->CCR3=i;
-HAL_Delay(300);
-		}
-*/
   }
   /* USER CODE END 3 */
 }
