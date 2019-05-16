@@ -20,7 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "MFRC522.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #ifdef __GNUC__
@@ -38,12 +38,14 @@
 /* USER CODE BEGIN PTD */
 #include "MotorLib.h"
 #include "RgbLedLib.h"
+#define	uchar	unsigned char
+#define	uint	unsigned int
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 //#define MODULE_MOTOR
-#define MODULE_RGBLED
+//#define MODULE_RGBLED
 //#define MODULE_JOYSTICK
 /* USER CODE END PD */
 
@@ -55,6 +57,8 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
+
+SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim4;
 
@@ -72,6 +76,7 @@ static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t j=0;
  char *str;
@@ -86,6 +91,21 @@ uint32_t id2[3]={0};
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char get;
+uchar getdata[16];
+int l,ii;
+uchar senddata[]={52,49,46,46,70,24,0,0,57,41,56,45,66,65,74,66};
+char reset[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+
+byte keyA[6] = {0xFf, 0xFf, 0xFF, 0xFF, 0xFF, 0xFF, };
+byte keyB[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
+
+
+
+
+
+
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 uint32_t val[3];
 
@@ -111,6 +131,11 @@ PUTCHAR_PROTOTYPE
   return ch;
 }
 
+void SPI_mfrc_Init(void)
+{
+	CS_PORT_NAME->ODR |= 1<<CS_PIN_NUM;  
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -120,7 +145,7 @@ PUTCHAR_PROTOTYPE
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+ uchar process, status, checksum1, str[MAX_LEN],cap,findex=0,mystr[5];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -145,6 +170,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM4_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 	
 	
@@ -185,12 +211,85 @@ HAL_Delay(3000);
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
 #endif	
+  SPI_mfrc_Init();
+  MFRC522_Init();
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	GPIOA->ODR |= 1<<4;
+  HAL_UART_Transmit(&huart1,(uchar *)"\n\rSerial Connected...\n\r", 23, 5000);
   while (1)
   {
+		findex++;
+		
+		 status = MFRC522_Request(PICC_REQIDL, str); 
+		
+		
+		
+     if (status == MI_OK) {
+			  
+  
+       HAL_UART_Transmit(&huart1,(uchar *)"\n\r~~~ Card detected!\n\r", 22, 5000);
+       HAL_UART_Transmit(&huart1,(uchar *)"Card Type : \n\r", 14, 5000);
+       HAL_UART_Transmit(&huart1,(uchar *)&str[0], 1, 5000); 
+     }
+		 
+		 status = MFRC522_Anticoll(str);
+     if (status == MI_OK) {
+			  
+  
+        checksum1 = str[0] ^ str[1] ^ str[2] ^ str[3];
+        HAL_UART_Transmit(&huart1,(uchar *)"\n\rThe card's number is:\n\r", 25, 5000);
+	  	 sprintf((char *)mystr,"%3d:%3d:%3d:%3d\n\r",(uchar)str[0],(uchar)str[1],(uchar)str[2],(uchar)str[3]);
+	      HAL_UART_Transmit(&huart1,mystr, 18, 5000);
+	  
+     cap=MFRC522_SelectTag(str);
+			 
+			      for (ii = 1; ii < 3; ii++) {  
+
+       // Try to authenticate each block first with the A key.
+	       process=MFRC522_Auth(0x60, ii,keyA ,str);
+      	 if (process == MI_OK) {
+         		process= MFRC522_Write(ii,senddata);
+            if (process == MI_OK) {
+	            process= MFRC522_Read(ii, getdata);
+	           	if (process == MI_OK) 
+	                  HAL_UART_Transmit(&huart1,(uchar *)"\n\r block\n\r", 10, 5000);
+              //		SER_SendChar(0,ii);
+              //		SER_putString (0,":");
+            		  for (l=0;l<16;l++){
+                    HAL_UART_Transmit(&huart1,(uchar *)&getdata[l], 1, 5000);																		
+                    HAL_UART_Transmit(&huart1,(uchar *)":", 1, 5000);	  
+	  	   }						  
+	   
+      } 
+	    }else{
+    	  process=MFRC522_Auth(0x61, ii,keyB,str);
+	      if (process == MI_OK) {
+   				process= MFRC522_Write(ii,senddata);
+      	  if (process == MI_OK) {
+	            process= MFRC522_Read(ii, getdata);
+	        	  if (process == MI_OK) 
+	         		  for (l=0;l<16;l++){
+	   	             HAL_UART_Transmit(&huart1,(uchar *)&getdata[l], 1, 5000);																		
+                   HAL_UART_Transmit(&huart1,(uchar *)":", 1, 5000);	  
+					   }						  
+	   		  } 
+          }else
+  		    {
+              HAL_UART_Transmit(&huart1,(uchar *)"\n\rKeys are wrong.\n\r", 19, 5000);
+		      }
+	      }
+	    }
+		
+      HAL_UART_Transmit(&huart1,(uchar *)"\n\rEnd.\n\r", 8, 5000);
+   	  MFRC522_Halt();
+	    MFRC522_Init();
+			
+	    HAL_Delay(2000);
+			}
 #ifdef MODULE_RGBLED
 
 		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
@@ -219,7 +318,7 @@ HAL_Delay(3000);
 		
 		
 		
-		
+		 HAL_Delay(2000);
 		
 		
 
@@ -232,6 +331,8 @@ HAL_Delay(3000);
   }
   /* USER CODE END 3 */
 }
+
+
 
 /**
   * @brief System Clock Configuration
@@ -311,7 +412,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -339,6 +440,44 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
   * @brief TIM4 Initialization Function
   * @param None
   * @retval None
@@ -358,9 +497,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 20;
+  htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = _MotorPwmPeriod;
+  htim4.Init.Period = 255;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
