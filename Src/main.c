@@ -20,7 +20,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "MFRC522.h"
+#include "rc522.h"
+
+#include "rc522test.h"
+
+//#include "MFRC522.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #ifdef __GNUC__
@@ -51,6 +55,33 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+uint8_t data[]="HELLO WORLD\n"; // transmit
+uint8_t t=10;
+// variable RFID
+uint8_t dataUDP_permit[]="Ma the hop le ";
+uint8_t dataUDP_deny[]="Ma the khong hop le ";
+unsigned char CardID[5];
+unsigned char MyID[5] = {0x6A, 0x08, 0xE7, 0xAB, 0x2E};	//My card on my keys
+
+uint8_t MFRC522_Check(uint8_t* id);
+uint8_t MFRC522_Compare(uint8_t* CardID, uint8_t* CompareID);
+void MFRC522_WriteRegister(uint8_t addr, uint8_t val);
+uint8_t MFRC522_ReadRegister(uint8_t addr);
+void MFRC522_SetBitMask(uint8_t reg, uint8_t mask);
+void MFRC522_ClearBitMask(uint8_t reg, uint8_t mask);
+uint8_t MFRC522_Request(uint8_t reqMode, uint8_t* TagType);
+uint8_t MFRC522_ToCard(uint8_t command, uint8_t* sendData, uint8_t sendLen, uint8_t* backData, uint16_t* backLen);
+uint8_t MFRC522_Anticoll(uint8_t* serNum);
+void MFRC522_CalulateCRC(uint8_t* pIndata, uint8_t len, uint8_t* pOutData);
+uint8_t MFRC522_SelectTag(uint8_t* serNum);
+uint8_t MFRC522_Auth(uint8_t authMode, uint8_t BlockAddr, uint8_t* Sectorkey, uint8_t* serNum);
+uint8_t MFRC522_Read(uint8_t blockAddr, uint8_t* recvData);
+uint8_t MFRC522_Write(uint8_t blockAddr, uint8_t* writeData);
+void MFRC522_Init(void);
+void MFRC522_Reset(void);
+void MFRC522_AntennaOn(void);
+void MFRC522_AntennaOff(void);
+void MFRC522_Halt(void);
 
 /* USER CODE END PM */
 
@@ -82,8 +113,8 @@ uint16_t j=0;
  char *str;
 uint32_t id2[3]={0};
       uint32_t i,d;
-
- 
+uint8_t datatest[16]={11};
+ uint8_t datatest2[20]={50};
 
 
 
@@ -91,14 +122,7 @@ uint32_t id2[3]={0};
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-char get;
-uchar getdata[16];
-int l,ii;
-uchar senddata[]={52,49,46,46,70,24,0,0,57,41,56,45,66,65,74,66};
-char reset[]={0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
-byte keyA[6] = {0xFf, 0xFf, 0xFF, 0xFF, 0xFF, 0xFF, };
-byte keyB[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
 
 
 
@@ -131,10 +155,7 @@ PUTCHAR_PROTOTYPE
   return ch;
 }
 
-void SPI_mfrc_Init(void)
-{
-	CS_PORT_NAME->ODR |= 1<<CS_PIN_NUM;  
-}
+
 
 /* USER CODE END 0 */
 
@@ -145,7 +166,7 @@ void SPI_mfrc_Init(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
- uchar process, status, checksum1, str[MAX_LEN],cap,findex=0,mystr[5];
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -172,21 +193,23 @@ int main(void)
   MX_TIM4_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-	
-	
+	MFRC522_Init();
+		printf("Waiting for RFID Card...!\n\r");
+	HAL_Delay(1000);
 	
 		  HAL_NVIC_DisableIRQ(EXTI0_IRQn);
   /* USER CODE BEGIN EXTI0_IRQn 0 */
+	/*
 if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
 { 
-/* Power-ON routine */
+
 printf("Wakeup");	
 	//HAL_PWR_EnableBkUpAccess();
 __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 
 	
 } 
-
+*/
 
 
 __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
@@ -211,85 +234,67 @@ HAL_Delay(3000);
         HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
 #endif	
-  SPI_mfrc_Init();
-  MFRC522_Init();
+  
 	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	GPIOA->ODR |= 1<<4;
-  HAL_UART_Transmit(&huart1,(uchar *)"\n\rSerial Connected...\n\r", 23, 5000);
+	
+char status;
+    unsigned char snr, buf[16], TagType[2], SelectedSnr[4], DefaultKey[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+   
+		
   while (1)
   {
-		findex++;
-		
-		 status = MFRC522_Request(PICC_REQIDL, str); 
-		
-		
-		
-     if (status == MI_OK) {
-			  
-  
-       HAL_UART_Transmit(&huart1,(uchar *)"\n\r~~~ Card detected!\n\r", 22, 5000);
-       HAL_UART_Transmit(&huart1,(uchar *)"Card Type : \n\r", 14, 5000);
-       HAL_UART_Transmit(&huart1,(uchar *)&str[0], 1, 5000); 
-     }
-		 
-		 status = MFRC522_Anticoll(str);
-     if (status == MI_OK) {
-			  
-  
-        checksum1 = str[0] ^ str[1] ^ str[2] ^ str[3];
-        HAL_UART_Transmit(&huart1,(uchar *)"\n\rThe card's number is:\n\r", 25, 5000);
-	  	 sprintf((char *)mystr,"%3d:%3d:%3d:%3d\n\r",(uchar)str[0],(uchar)str[1],(uchar)str[2],(uchar)str[3]);
-	      HAL_UART_Transmit(&huart1,mystr, 18, 5000);
-	  
-     cap=MFRC522_SelectTag(str);
-			 
-			      for (ii = 1; ii < 3; ii++) {  
 
-       // Try to authenticate each block first with the A key.
-	       process=MFRC522_Auth(0x60, ii,keyA ,str);
-      	 if (process == MI_OK) {
-         		process= MFRC522_Write(ii,senddata);
-            if (process == MI_OK) {
-	            process= MFRC522_Read(ii, getdata);
-	           	if (process == MI_OK) 
-	                  HAL_UART_Transmit(&huart1,(uchar *)"\n\r block\n\r", 10, 5000);
-              //		SER_SendChar(0,ii);
-              //		SER_putString (0,":");
-            		  for (l=0;l<16;l++){
-                    HAL_UART_Transmit(&huart1,(uchar *)&getdata[l], 1, 5000);																		
-                    HAL_UART_Transmit(&huart1,(uchar *)":", 1, 5000);	  
-	  	   }						  
-	   
-      } 
-	    }else{
-    	  process=MFRC522_Auth(0x61, ii,keyB,str);
-	      if (process == MI_OK) {
-   				process= MFRC522_Write(ii,senddata);
-      	  if (process == MI_OK) {
-	            process= MFRC522_Read(ii, getdata);
-	        	  if (process == MI_OK) 
-	         		  for (l=0;l<16;l++){
-	   	             HAL_UART_Transmit(&huart1,(uchar *)&getdata[l], 1, 5000);																		
-                   HAL_UART_Transmit(&huart1,(uchar *)":", 1, 5000);	  
-					   }						  
-	   		  } 
-          }else
-  		    {
-              HAL_UART_Transmit(&huart1,(uchar *)"\n\rKeys are wrong.\n\r", 19, 5000);
-		      }
-	      }
-	    }
 		
-      HAL_UART_Transmit(&huart1,(uchar *)"\n\rEnd.\n\r", 8, 5000);
-   	  MFRC522_Halt();
-	    MFRC522_Init();
+		
+		if (MFRC522_Check(CardID) == MI_OK) 
+			{
+				
+				printf( "[%02x-%02x-%02x-%02x-%02x] \r\n", CardID[0], CardID[1], CardID[2], CardID[3], CardID[4]);
+				
+				
+				if(MFRC522_Auth(PICC_AUTHENT1A,7,DefaultKey,CardID))
+					printf("OK AU1!\r\n");
+				
+				if(MFRC522_Read(4,datatest))
+					printf("OK READ!\r\n");
+							printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d \r\n",datatest[0],datatest[1],datatest[2],datatest[3],datatest[4],datatest[5],datatest[6],datatest[7],datatest[8],datatest[9],datatest[10],
+					datatest[11],datatest[12],datatest[13],datatest[14],datatest[15]);
+				
+								if(MFRC522_Auth(PICC_AUTHENT1B,7,DefaultKey,CardID))
+					printf("OK AU2!\r\n");
+								
+				if(MFRC522_Write(4,datatest2))
+					printf("OK WRITE !\r\n");
+				
+			 printf("read finish!\r\n");
+		HAL_Delay(2000);
+				
+							MFRC522_Read(4,datatest2);
+							printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d \r\n",datatest[0],datatest[1],datatest[2],datatest[3],datatest[4],datatest[5],datatest[6],datatest[7],datatest[8],datatest[9],datatest[10],
+					datatest[11],datatest[12],datatest[13],datatest[14],datatest[15]);
+								MFRC522_Read(4,datatest);
+							printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d \r\n",datatest[0],datatest[1],datatest[2],datatest[3],datatest[4],datatest[5],datatest[6],datatest[7],datatest[8],datatest[9],datatest[10],
+					datatest[11],datatest[12],datatest[13],datatest[14],datatest[15]);
+								MFRC522_Read(4,datatest);
+							printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d \r\n",datatest[0],datatest[1],datatest[2],datatest[3],datatest[4],datatest[5],datatest[6],datatest[7],datatest[8],datatest[9],datatest[10],
+					datatest[11],datatest[12],datatest[13],datatest[14],datatest[15]);
+				
+				
+        
+
+				
+				
+				}
 			
-	    HAL_Delay(2000);
-			}
+				
+				
+				 					 
+		  HAL_Delay(10);  
+				
 #ifdef MODULE_RGBLED
 
 		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
