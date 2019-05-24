@@ -1,0 +1,10 @@
+nrf24proj\delay.o: ..\libs\delay.c
+nrf24proj\delay.o: ..\libs\delay.h
+nrf24proj\delay.o: C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include\stm32f10x.h
+nrf24proj\delay.o: .\RTE\_nrf24proj\RTE_Components.h
+nrf24proj\delay.o: ../Drivers/CMSIS/Include/core_cm3.h
+nrf24proj\delay.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+nrf24proj\delay.o: ../Drivers/CMSIS/Include/core_cmInstr.h
+nrf24proj\delay.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+nrf24proj\delay.o: ../Drivers/CMSIS/Include/core_cmFunc.h
+nrf24proj\delay.o: C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include\system_stm32f10x.h

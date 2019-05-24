@@ -7,6 +7,7 @@
 "testtrace\stm32f1xx_hal_msp.o"
 "testtrace\rc522.o"
 "testtrace\rc522test.o"
+"testtrace\testlib522.o"
 "testtrace\stm32f1xx_hal_gpio_ex.o"
 "testtrace\stm32f1xx_hal_adc.o"
 "testtrace\stm32f1xx_hal_adc_ex.o"
