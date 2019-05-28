@@ -310,11 +310,13 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 			nRF24_ClearIRQFlags();
 
 			// Print a payload contents to UART
-			printf("RCV PIPE#");
-			printf("%d",pipe);
-			printf(" PAYLOAD:>");
-			printf((char *)nRF24_payload, payload_length);
-			printf("<\r\n");
+		//	printf("RCV PIPE#");
+		//	printf("%d",pipe);
+		//	printf(" PAYLOAD:>");
+			printf("%d,%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
+				nRF24_payload[2]*256+nRF24_payload[3],
+				nRF24_payload[4]*256+nRF24_payload[5]);
+			printf("\r\n");
     	}
     }
   /* USER CODE END 3 */
@@ -411,7 +413,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 256000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;

@@ -388,7 +388,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     	}
 			
     	// Wait ~0.5s
-    	HAL_Delay(500);
+    	HAL_Delay(100);
     }
 
     
