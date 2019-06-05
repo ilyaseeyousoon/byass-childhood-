@@ -210,7 +210,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
- 
+ HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
  printf("\r\nSTM32F103RET6 is online.\r\n");
 
     // RX/TX disabled
@@ -315,13 +315,15 @@ int main(void)
 		//	printf("RCV PIPE#");
 		//	printf("%d",pipe);
 		//	printf(" PAYLOAD:>");
-			printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
-				nRF24_payload[2]*256+nRF24_payload[3],
-				nRF24_payload[4]*256+nRF24_payload[5]);
-			printf("\r\n");
-				MoveByJoystick(nRF24_payload[2]*256+nRF24_payload[3]);
+			//printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
+				//nRF24_payload[2]*256+nRF24_payload[3],
+				//nRF24_payload[4]*256+nRF24_payload[5]);
+			//printf("\r\n");
+				//MoveByJoystick(nRF24_payload[2]*256+nRF24_payload[3]);
+				 MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
+				
 				//TIM4->CCR4=0;
-				//HAL_Delay(3000);
+				//HAL_Delay(200);
     	}
 			else
 			{
@@ -457,6 +459,10 @@ static void MX_TIM4_Init(void)
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();

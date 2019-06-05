@@ -44,7 +44,7 @@ void MoveByJoystick (uint16_t testts){
 
 void MoveAndTurn(uint16_t speedX,int16_t speedY){
 
-	
+	uint16_t temp1,temp2;
 	
 	 //speedX<_JoystickUnderZero ? __MoveForwardJoy(speedX) :  (speedX>_JoystickUpToZero ? __MoveBackwardJoy(speedX) : __MoveZero());
 
@@ -55,23 +55,54 @@ void MoveAndTurn(uint16_t speedX,int16_t speedY){
 		
 			if(speedX<_JoystickUnderZero){
 				HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-				_MotorSpeedReg4=_MotorPwmPeriod-speedY/_YaxisUnderZero;
-				_MotorSpeedReg3=_MotorPwmPeriod-(speedY+speedX)/_YaxisUnderZero ;
+				
+				temp1=_MotorPwmPeriod-speedY/_YaxisUnderZero;
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=_MotorPwmPeriod-(speedY+speedX)/_YaxisUnderZero ;
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+				
 				//printf("speedX=%d speedY=%d \r\n",speedX,speedY);
 				printf("UnderZero r=%d lt=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3);
 	}
 	else if (speedX>_JoystickUpToZero){
 					HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-					_MotorSpeedReg4=_MotorPwmPeriod-speedY/_YaxisUnderZero +(_JoystickUpToZero+speedX)/_YaxisUpZero;
-					_MotorSpeedReg3=_MotorPwmPeriod-speedY/_YaxisUnderZero ; 
+		
+				temp1=_MotorPwmPeriod-speedY/_YaxisUnderZero +(_JoystickUpToZero+speedX)/_YaxisUpZero;;
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=_MotorPwmPeriod-speedY/_YaxisUnderZero ;
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+				
+		
+
 	//	printf("speedX=%d speedY=%d \r\n",speedX,speedY);
 					//printf("UpToZero r=%d l=%d \r\n",_MotorPwmPeriod-(speedY+_JoystickMax-speedX)/_YaxisUnderZero,_MotorPwmPeriod-speedY/_YaxisUnderZero );
 		printf("UpToZero r=%d lt=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3);
 	}
 	else {
 					HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
-					_MotorSpeedReg4=_MotorPwmPeriod-speedY/((_JoystickUnderZero-_JoystickMin)/_MotorPwmPeriod);
-					_MotorSpeedReg3=_MotorPwmPeriod-speedY/((_JoystickUnderZero-_JoystickMin)/_MotorPwmPeriod) ;
+		
+		
+				temp1=_MotorPwmPeriod-speedY/((_JoystickUnderZero-_JoystickMin)/_MotorPwmPeriod);
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=_MotorPwmPeriod-speedY/((_JoystickUnderZero-_JoystickMin)/_MotorPwmPeriod);
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+		
+
 	//	printf("speedX=%d speedY=%d \r\n",speedX,speedY); 
     //       printf("right=%d left=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3 );
 	}
@@ -89,24 +120,53 @@ void MoveAndTurn(uint16_t speedX,int16_t speedY){
 
 					if(speedX<_JoystickUnderZero){
 				HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET); HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-				_MotorSpeedReg4=(speedY-_JoystickUpToZero)/_YaxisUpZero - speedX/(_JoystickUnderZero/100);
-				_MotorSpeedReg3=(speedY-_JoystickUpToZero)/_YaxisUpZero + speedX/(_JoystickUnderZero/100) ;
+						
+				temp1=(speedY-_JoystickUpToZero)/_YaxisUpZero - speedX/(_JoystickUnderZero/100);
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=(speedY-_JoystickUpToZero)/_YaxisUpZero + speedX/(_JoystickUnderZero/100);
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+
 				printf("speedX=%d speedY=%d \r\n",speedX,speedY);
 						//printf("UnderZero r=%d lt=%d \r\n",_MotorPwmPeriod-speedY/_YaxisUpZero,_MotorPwmPeriod-(speedY+speedX)/_YaxisUpZero );
 							printf("UnderZero r=%d lt=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3);
 	}
 	else if (speedX>_JoystickUpToZero){
 					HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET); HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-					_MotorSpeedReg4=(speedY-_JoystickUpToZero)/_YaxisUpZero + speedX/_YaxisUpZero;
-					_MotorSpeedReg3=(speedY-_JoystickUpToZero)/_YaxisUpZero - speedX/_YaxisUpZero; 
+		
+						temp1=(speedY-_JoystickUpToZero)/_YaxisUpZero + speedX/_YaxisUpZero;
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=(speedY-_JoystickUpToZero)/_YaxisUpZero - speedX/_YaxisUpZero; 
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+		
+
 		printf("speedX=%d speedY=%d \r\n",speedX,speedY);
 		//			printf("UpToZero r=%d l=%d \r\n",_MotorPwmPeriod-(speedY+_JoystickMax-speedX)/_YaxisUpZero,_MotorPwmPeriod-speedY/_YaxisUpZero );
 			printf("UpToZero r=%d lt=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3);
 	}
 	else {
 				HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET); HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
-					_MotorSpeedReg4=_MotorPwmPeriod-speedY/_YaxisUpZero;
-					_MotorSpeedReg3=_MotorPwmPeriod-speedY/_YaxisUpZero ;
+		
+		
+								temp1=_MotorPwmPeriod-speedY/_YaxisUpZero;
+				if(temp1>100 && temp1<1000 ) temp1=100;
+				if(temp1>1000)  temp1=0;
+				_MotorSpeedReg4=temp1;
+				
+				temp2=_MotorPwmPeriod-speedY/_YaxisUpZero ;
+				if(temp2>100 && temp2<1000 ) temp2=100;
+				if(temp2>1000)  temp2=0;
+				_MotorSpeedReg3=temp2;
+		
 	//	printf("speedX=%d speedY=%d \r\n",speedX,speedY); 
    //        printf("right=%d left=%d \r\n",_MotorSpeedReg4,_MotorSpeedReg3 );
 	}
@@ -119,13 +179,3 @@ void MoveAndTurn(uint16_t speedX,int16_t speedY){
 			_MotorSpeedReg3=0;
 			
 			}
-
-	
-	
-
-	
-	
-	
-}
-
-
