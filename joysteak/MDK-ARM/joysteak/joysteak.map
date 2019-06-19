@@ -1294,15 +1294,15 @@ Image Symbol Table
     i.nRF24_WritePayload                     0x08003580   Section        0  nrf24.o(i.nRF24_WritePayload)
     i.nRF24_WriteReg                         0x0800358c   Section        0  nrf24.o(i.nRF24_WriteReg)
     nRF24_WriteReg                           0x0800358d   Thumb Code    78  nrf24.o(i.nRF24_WriteReg)
-    .constdata                               0x080035e0   Section        9  main.o(.constdata)
-    nRF24_ADDR0                              0x080035e0   Data           3  main.o(.constdata)
-    nRF24_ADDR1                              0x080035e3   Data           3  main.o(.constdata)
-    nRF24_ADDR2                              0x080035e6   Data           3  main.o(.constdata)
-    .constdata                               0x080035e9   Section       13  nrf24.o(.constdata)
-    nRF24_RX_PW_PIPE                         0x080035e9   Data           6  nrf24.o(.constdata)
-    nRF24_ADDR_REGS                          0x080035ef   Data           7  nrf24.o(.constdata)
-    .constdata                               0x080035f6   Section       16  system_stm32f1xx.o(.constdata)
-    .constdata                               0x08003606   Section        8  system_stm32f1xx.o(.constdata)
+    .constdata                               0x080035e0   Section       15  main.o(.constdata)
+    nRF24_ADDR0                              0x080035e0   Data           5  main.o(.constdata)
+    nRF24_ADDR1                              0x080035e5   Data           5  main.o(.constdata)
+    nRF24_ADDR2                              0x080035ea   Data           5  main.o(.constdata)
+    .constdata                               0x080035ef   Section       13  nrf24.o(.constdata)
+    nRF24_RX_PW_PIPE                         0x080035ef   Data           6  nrf24.o(.constdata)
+    nRF24_ADDR_REGS                          0x080035f5   Data           7  nrf24.o(.constdata)
+    .constdata                               0x080035fc   Section       16  system_stm32f1xx.o(.constdata)
+    .constdata                               0x0800360c   Section        8  system_stm32f1xx.o(.constdata)
     .data                                    0x20000000   Section        6  main.o(.data)
     .data                                    0x20000008   Section       12  stm32f1xx_hal.o(.data)
     .data                                    0x20000014   Section        4  system_stm32f1xx.o(.data)
@@ -1539,10 +1539,10 @@ Image Symbol Table
     nRF24_SetTXPower                         0x08003497   Thumb Code    26  nrf24.o(i.nRF24_SetTXPower)
     nRF24_TransmitPacket                     0x080034b1   Thumb Code   126  main.o(i.nRF24_TransmitPacket)
     nRF24_WritePayload                       0x08003581   Thumb Code    10  nrf24.o(i.nRF24_WritePayload)
-    AHBPrescTable                            0x080035f6   Data          16  system_stm32f1xx.o(.constdata)
-    APBPrescTable                            0x08003606   Data           8  system_stm32f1xx.o(.constdata)
-    Region$$Table$$Base                      0x08003610   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08003630   Number         0  anon$$obj.o(Region$$Table)
+    AHBPrescTable                            0x080035fc   Data          16  system_stm32f1xx.o(.constdata)
+    APBPrescTable                            0x0800360c   Data           8  system_stm32f1xx.o(.constdata)
+    Region$$Table$$Base                      0x08003614   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08003634   Number         0  anon$$obj.o(Region$$Table)
     payload_length                           0x20000000   Data           1  main.o(.data)
     pipe                                     0x20000001   Data           1  main.o(.data)
     tx_res                                   0x20000002   Data           1  main.o(.data)
@@ -1568,9 +1568,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000ed
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x0000364c, Max: 0x00010000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003650, Max: 0x00010000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003630, Max: 0x00010000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003634, Max: 0x00010000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1734,26 +1734,25 @@ Memory Map of the image
     0x08003580   0x08003580   0x0000000a   Code   RO          383    i.nRF24_WritePayload  nrf24.o
     0x0800358a   0x0800358a   0x00000002   PAD
     0x0800358c   0x0800358c   0x00000054   Code   RO          384    i.nRF24_WriteReg    nrf24.o
-    0x080035e0   0x080035e0   0x00000009   Data   RO           25    .constdata          main.o
-    0x080035e9   0x080035e9   0x0000000d   Data   RO          385    .constdata          nrf24.o
-    0x080035f6   0x080035f6   0x00000010   Data   RO         2505    .constdata          system_stm32f1xx.o
-    0x08003606   0x08003606   0x00000008   Data   RO         2506    .constdata          system_stm32f1xx.o
-    0x0800360e   0x0800360e   0x00000002   PAD
-    0x08003610   0x08003610   0x00000020   Data   RO         2844    Region$$Table       anon$$obj.o
+    0x080035e0   0x080035e0   0x0000000f   Data   RO           25    .constdata          main.o
+    0x080035ef   0x080035ef   0x0000000d   Data   RO          385    .constdata          nrf24.o
+    0x080035fc   0x080035fc   0x00000010   Data   RO         2505    .constdata          system_stm32f1xx.o
+    0x0800360c   0x0800360c   0x00000008   Data   RO         2506    .constdata          system_stm32f1xx.o
+    0x08003614   0x08003614   0x00000020   Data   RO         2844    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08003630, Size: 0x00000558, Max: 0x00005000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08003634, Size: 0x00000558, Max: 0x00005000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08003630   0x00000006   Data   RW           26    .data               main.o
-    0x20000006   0x08003636   0x00000002   PAD
-    0x20000008   0x08003638   0x0000000c   Data   RW         1635    .data               stm32f1xx_hal.o
-    0x20000014   0x08003644   0x00000004   Data   RW         2507    .data               system_stm32f1xx.o
-    0x20000018   0x08003648   0x00000004   Data   RW         2820    .data               mc_w.l(stdout.o)
+    0x20000000   0x08003634   0x00000006   Data   RW           26    .data               main.o
+    0x20000006   0x0800363a   0x00000002   PAD
+    0x20000008   0x0800363c   0x0000000c   Data   RW         1635    .data               stm32f1xx_hal.o
+    0x20000014   0x08003648   0x00000004   Data   RW         2507    .data               system_stm32f1xx.o
+    0x20000018   0x0800364c   0x00000004   Data   RW         2820    .data               mc_w.l(stdout.o)
     0x2000001c        -       0x000000f4   Zero   RW           22    .bss                main.o
     0x20000110        -       0x00000044   Zero   RW           24    .bss                main.o
-    0x20000154   0x0800364c   0x00000004   PAD
+    0x20000154   0x08003650   0x00000004   PAD
     0x20000158        -       0x00000400   Zero   RW            1    STACK               startup_stm32f103xb.o
 
 
@@ -1764,7 +1763,7 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1294        264          9          6        312     441394   main.o
+      1294        264         15          6        312     441394   main.o
        854         50         13          0          0      13912   nrf24.o
         32          6          0          0          0        494   nrf24_hal.o
         36          8        236          0       1024        780   startup_stm32f103xb.o
@@ -1784,9 +1783,9 @@ Image component sizes
         72         16         24          4          0       1091   system_stm32f1xx.o
 
     ----------------------------------------------------------------------
-      9864        732        316         24       1340     538104   Object Totals
+      9864        732        320         24       1340     538104   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-        34          0          2          2          4          0   (incl. Padding)
+        34          0          0          2          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -1839,15 +1838,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     13556        838        316         28       1340     533676   Grand Totals
-     13556        838        316         28       1340     533676   ELF Image Totals
-     13556        838        316         28          0          0   ROM Totals
+     13556        838        320         28       1340     533676   Grand Totals
+     13556        838        320         28       1340     533676   ELF Image Totals
+     13556        838        320         28          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                13872 (  13.55kB)
+    Total RO  Size (Code + RO Data)                13876 (  13.55kB)
     Total RW  Size (RW Data + ZI Data)              1368 (   1.34kB)
-    Total ROM Size (Code + RO Data + RW Data)      13900 (  13.57kB)
+    Total ROM Size (Code + RO Data + RW Data)      13904 (  13.58kB)
 
 ==============================================================================
 

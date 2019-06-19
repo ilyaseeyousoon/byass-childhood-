@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jpigpio">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/lib/jpigpio.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

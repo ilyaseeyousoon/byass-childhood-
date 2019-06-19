@@ -253,17 +253,17 @@ int main(void)
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_250kbps);
+    nRF24_SetDataRate(nRF24_DR_1Mbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
 
     // Set address width, its common for all pipes (RX and TX)
-    nRF24_SetAddrWidth(3);
+    nRF24_SetAddrWidth(5);
 
     // Configure RX PIPE#0
-    static const uint8_t nRF24_ADDR0[] = { 0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = { 0xE7, 0x1C, 0xE2 };
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = { 0x01,0x01,0xE7, 0x1C, 0xE2 };
 		static const uint8_t nRF24_ADDR2[] = {  0xE3 };
 		static const uint8_t nRF24_ADDR3[] = {  0xE4 };
 		static const uint8_t nRF24_ADDR4[] = {  0xE5 };
@@ -304,7 +304,7 @@ int main(void)
     	// This is far from best solution, but it's ok for testing purposes
     	// More smart way is to use the IRQ pin :)
     	//
-    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) {
+    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
     		// Get a payload from the transceiver
     		pipe = nRF24_ReadPayload(nRF24_payload, &payload_length);
 
@@ -313,12 +313,13 @@ int main(void)
 
 			// Print a payload contents to UART
 		//	printf("RCV PIPE#");
-		//	printf("%d",pipe);
+			printf("%d",pipe);
+				
 		//	printf(" PAYLOAD:>");
 			//printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
 				//nRF24_payload[2]*256+nRF24_payload[3],
 				//nRF24_payload[4]*256+nRF24_payload[5]);
-			//printf("\r\n");
+			printf("\r\n");
 				//MoveByJoystick(nRF24_payload[2]*256+nRF24_payload[3]);
 				 MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
 				

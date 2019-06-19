@@ -289,13 +289,13 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_250kbps);
+    nRF24_SetDataRate(nRF24_DR_1Mbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
 
     // Set address width, its common for all pipes (RX and TX)
-    nRF24_SetAddrWidth(3);
+    nRF24_SetAddrWidth(5);
 
     // Set TX power (maximum)
     nRF24_SetTXPower(nRF24_TXPWR_0dBm);
@@ -309,12 +309,12 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     // Wake the transceiver
     nRF24_SetPowerMode(nRF24_PWR_UP);
 
-    static const uint8_t nRF24_ADDR0[] = { 0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = { 0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = { 0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = { 0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = { 0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = { 0xE7, 0x1C, 0xE6 };
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
 
     // The main loop
     j = 0; pipe = 0;
