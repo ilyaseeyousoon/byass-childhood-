@@ -289,7 +289,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_1Mbps);
+    nRF24_SetDataRate(nRF24_DR_250kbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
@@ -347,13 +347,13 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 				break;
 			case 1:
 				// addr #2
-				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
-				payload_length = 6;
+				//nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
+			//	payload_length = 6;
 				break;
 			case 2:
 				// addr #3
-				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-				payload_length = 6;
+			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+			//	payload_length = 6;
 				break;
 			default:
 				break;

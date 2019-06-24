@@ -253,7 +253,7 @@ int main(void)
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_1Mbps);
+    nRF24_SetDataRate(nRF24_DR_250kbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
@@ -274,12 +274,12 @@ int main(void)
 		nRF24_SetAddr(nRF24_PIPE3, nRF24_ADDR3); // program address for RX pipe #3
 		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
 		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
-    nRF24_SetRXPipe(nRF24_PIPE0, nRF24_AA_OFF, 6); 
+    //nRF24_SetRXPipe(nRF24_PIPE0, nRF24_AA_OFF, 6); 
 		nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE2, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE3, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE4, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE5, nRF24_AA_OFF, 6); 
+		//nRF24_SetRXPipe(nRF24_PIPE2, nRF24_AA_OFF, 6); 
+		//nRF24_SetRXPipe(nRF24_PIPE3, nRF24_AA_OFF, 6); 
+		//nRF24_SetRXPipe(nRF24_PIPE4, nRF24_AA_OFF, 6); 
+		//nRF24_SetRXPipe(nRF24_PIPE5, nRF24_AA_OFF, 6); 
 
 
     // Set operational mode (PRX == receiver)
@@ -313,13 +313,13 @@ int main(void)
 
 			// Print a payload contents to UART
 		//	printf("RCV PIPE#");
-			printf("%d",pipe);
+			//printf("%d",pipe);
 				
 		//	printf(" PAYLOAD:>");
-			//printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
-				//nRF24_payload[2]*256+nRF24_payload[3],
-				//nRF24_payload[4]*256+nRF24_payload[5]);
-			printf("\r\n");
+		//	printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
+		//		nRF24_payload[2]*256+nRF24_payload[3],
+		//		nRF24_payload[4]*256+nRF24_payload[5]);
+		//	printf("\r\n");
 				//MoveByJoystick(nRF24_payload[2]*256+nRF24_payload[3]);
 				 MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
 				
