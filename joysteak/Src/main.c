@@ -346,14 +346,14 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 				payload_length = 6;
 				break;
 			case 1:
-				// addr #2
-				//nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
-			//	payload_length = 6;
+				 //addr #2
+				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
+				payload_length = 6;
 				break;
 			case 2:
 				// addr #3
-			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-			//	payload_length = 6;
+				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+				payload_length = 6;
 				break;
 			default:
 				break;

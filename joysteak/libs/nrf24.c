@@ -414,6 +414,7 @@ void nRF24_WritePayload(uint8_t *pBuf, uint8_t length) {
 //   nRF24_RX_PIPEX - packet has been received from the pipe number X
 //   nRF24_RX_EMPTY - the RX FIFO is empty
 nRF24_RXResult nRF24_ReadPayload(uint8_t *pBuf, uint8_t *length) {
+	
 	uint8_t pipe;
 
 	// Extract a payload pipe number from the STATUS register
