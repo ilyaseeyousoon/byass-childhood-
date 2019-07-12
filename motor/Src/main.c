@@ -70,6 +70,17 @@ static void MX_TIM4_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+		
+	uint32_t	cw=0;
+		
+			uint8_t SerialModule[4];
+		
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -85,9 +96,9 @@ PUTCHAR_PROTOTYPE
 }
 
 
-uint8_t payload_length;
+uint8_t payload_length=6;
 uint32_t i,j,k;
-
+uint8_t monitoreFlag=0;
 // Buffer to store a payload of maximum width
 uint8_t nRF24_payload[32]={0};
 
@@ -112,6 +123,11 @@ typedef enum {
 } nRF24_TXResult;
 
 nRF24_TXResult tx_res;
+
+
+
+
+
 
 // Function to transmit data packet
 // input:
@@ -174,6 +190,63 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	return nRF24_TX_ERROR;
 }
 
+
+
+void TransmitIdentification (){
+uint8_t Ident[]={2,1,0,0,0,0};
+
+	Ident[2]=SerialModule[0];
+	Ident[3]=SerialModule[1];
+	Ident[4]=SerialModule[2];
+	Ident[5]=SerialModule[3];
+
+	
+	
+  	nRF24_SetPowerMode(nRF24_PWR_DOWN);
+    // Set TX power (maximum)
+    nRF24_SetTXPower(nRF24_TXPWR_0dBm);
+    // Set operational mode (PTX == transmitter)
+    nRF24_SetOperationalMode(nRF24_MODE_TX);
+    // Clear any pending IRQ flags
+    nRF24_ClearIRQFlags();
+	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+    // Wake the transceiver
+    nRF24_SetPowerMode(nRF24_PWR_UP);
+	
+	
+	    	tx_res = nRF24_TransmitPacket(Ident, payload_length);
+    	switch (tx_res) {
+			case nRF24_TX_SUCCESS:
+				printf("OK");
+				break;
+			case nRF24_TX_TIMEOUT:
+				printf("TIMEOUT");
+				break;
+			case nRF24_TX_MAXRT:
+				printf("MAX RETRANSMIT");
+				break;
+			default:
+				printf("ERROR");
+				break;
+		}
+    	printf("\r\n");
+		
+			nRF24_SetPowerMode(nRF24_PWR_DOWN);
+		
+		 // Set operational mode (PRX == receiver)
+    nRF24_SetOperationalMode(nRF24_MODE_RX);
+
+    // Wake the transceiver
+    nRF24_SetPowerMode(nRF24_PWR_UP);
+
+    // Put the transceiver to the RX mode
+    nRF24_CE_H();
+		
+	
+	
+
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -184,6 +257,18 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+		volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
+	volatile uint32_t __UniqueID[3];
+	__UniqueID[0] = UniqueID[0];
+	__UniqueID[1] = UniqueID[1];
+	__UniqueID[2] = UniqueID[2];
+
+	SerialModule[0]=__UniqueID[2];
+	SerialModule[1]=__UniqueID[2]>>8;
+	SerialModule[2]=__UniqueID[2]>>16;
+	SerialModule[3]=__UniqueID[2]>>24;
+
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -262,12 +347,7 @@ int main(void)
     nRF24_SetAddrWidth(5);
 
     // Configure RX PIPE#0
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = { 0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0xE6 };
+
     nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
 		nRF24_SetAddr(nRF24_PIPE1, nRF24_ADDR1); // program address for RX pipe #1
 		nRF24_SetAddr(nRF24_PIPE2, nRF24_ADDR2); // program address for RX pipe #2
@@ -298,38 +378,31 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		
-		    	// Constantly poll the status of the RX FIFO and get a payload if FIFO is not empty
-    	//
-    	// This is far from best solution, but it's ok for testing purposes
-    	// More smart way is to use the IRQ pin :)
-    	//
+
     	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
-    		// Get a payload from the transceiver
     		pipe = nRF24_ReadPayload(nRF24_payload, &payload_length);
 
-    		// Clear all pending IRQ flags
 			nRF24_ClearIRQFlags();
 
-			// Print a payload contents to UART
-		//	printf("RCV PIPE#");
-			//printf("%d",pipe);
+
 				
-		//	printf(" PAYLOAD:>");
-		//	printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
-		//		nRF24_payload[2]*256+nRF24_payload[3],
-		//		nRF24_payload[4]*256+nRF24_payload[5]);
-		//	printf("\r\n");
-				//MoveByJoystick(nRF24_payload[2]*256+nRF24_payload[3]);
-				 MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
+MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
+
+//						printf(" PAYLOAD:>");
+//			printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
+//				nRF24_payload[2]*256+nRF24_payload[3],
+//				nRF24_payload[4]*256+nRF24_payload[5]);
+//			printf("\r\n");
 				
-				//TIM4->CCR4=0;
-				//HAL_Delay(200);
     	}
-			else
-			{
-		//MoveByJoystick(_JoystickZero);
-			}
+			else{
+	if(monitoreFlag==1){
+				TransmitIdentification();
+		monitoreFlag=0;
+	}
+}
+			
+			HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

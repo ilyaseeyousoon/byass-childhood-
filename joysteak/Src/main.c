@@ -44,6 +44,10 @@ uint32_t ADC_BUF[3];
 uint8_t ADC_BUF_8b[32];
 bool  AdcRequesStart=false;
 
+uint8_t Ident[]={1,0,0,0,0,0};
+uint8_t cw=0;
+	uint8_t monitoreFlag=0;
+
 #define  _MotorPwmDevider 20
 #define  _MotorPwmPeriod 100
 #define  _JoystickMax 4096
@@ -69,6 +73,10 @@ typedef enum {
 } nRF24_TXResult;
 
 nRF24_TXResult tx_res;
+
+
+
+
 
 nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	volatile uint32_t wait = nRF24_WAIT_TIMEOUT;
@@ -213,7 +221,21 @@ PUTCHAR_PROTOTYPE
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
+	volatile uint32_t __UniqueID[3];
+	__UniqueID[0] = UniqueID[0];
+	__UniqueID[1] = UniqueID[1];
+	__UniqueID[2] = UniqueID[2];
+	uint8_t SerialModule[4];
+	SerialModule[0]=__UniqueID[2];
+	SerialModule[1]=__UniqueID[2]>>8;
+	SerialModule[2]=__UniqueID[2]>>16;
+	SerialModule[3]=__UniqueID[2]>>24;
+	Ident[2]=SerialModule[0];
+	Ident[3]=SerialModule[1];
+	Ident[4]=SerialModule[2];
+	Ident[5]=SerialModule[3];
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -316,6 +338,17 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
 		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
 
+		
+		nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
+		nRF24_SetAddr(nRF24_PIPE1, nRF24_ADDR1); // program address for RX pipe #1
+		nRF24_SetAddr(nRF24_PIPE2, nRF24_ADDR2); // program address for RX pipe #2
+		nRF24_SetAddr(nRF24_PIPE3, nRF24_ADDR3); // program address for RX pipe #3
+		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
+		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
+
+
+		
+		
     // The main loop
     j = 0; pipe = 0;
 		
@@ -347,13 +380,13 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 				break;
 			case 1:
 				 //addr #2
-				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
+			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
 				payload_length = 6;
 				break;
 			case 2:
 				// addr #3
-				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-				payload_length = 6;
+			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+				//payload_length = 6;
 				break;
 			default:
 				break;
@@ -382,13 +415,36 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 		}
     	printf("\r\n");
 
-		    	pipe++;
-    	if (pipe > 2) {
-    		pipe = 0;
-    	}
+//		    	pipe++;
+//    	if (pipe > 2) {
+//    		pipe = 0;
+//    	}
 			
     	// Wait ~0.5s
-    	HAL_Delay(100);
+
+				
+
+		if(monitoreFlag==1){
+					nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+	  nRF24_TransmitPacket(Ident, 6);
+		monitoreFlag=0;
+	}
+		
+	
+	
+
+
+		
+
+    	HAL_Delay(50);
+			
+
+							
+
+							
+    	
+						
+			
     }
 
     
