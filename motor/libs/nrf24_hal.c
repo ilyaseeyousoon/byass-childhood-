@@ -1,5 +1,7 @@
 #include "nrf24_hal.h"
+#include "main.h"
 
+extern uint8_t err;
 
 // Configure the GPIO lines of the nRF24L01 transceiver
 // note: IRQ pin must be configured separately
@@ -33,7 +35,14 @@ uint8_t nRF24_LL_RW(uint8_t data) {
 	 // Wait until TX buffer is empty
 	uint8_t temp_read;
 	//while (SPI_I2S_GetFlagStatus(nRF24_SPI_PORT, SPI_I2S_FLAG_TXE) == RESET);
-	HAL_SPI_TransmitReceive(&hspi2,&data,&temp_read,1,100);
+ err=	HAL_SPI_TransmitReceive(&hspi2,&data,&temp_read,1,100);
+	if(err!=0){
+
+//			__HAL_SPI_RESET_HANDLE_STATE(&hspi2);
+//		__HAL_SPI_CLEAR_OVRFLAG(&hspi2);
+//	__HAL_SPI_CLEAR_CRCERRFLAG(&hspi2);
+	
+	}
 	// Send byte to SPI (TXE cleared)
 	//SPI_I2S_SendData(nRF24_SPI_PORT, data);
 	// Wait while receive buffer is empty

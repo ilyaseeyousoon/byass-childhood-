@@ -6,7 +6,7 @@
 #include "stm32f1xx_hal.h"
 
 
-#define  _MotorPwmDevider 2
+#define  _MotorPwmDevider 5000
 #define  _MotorPwmPeriod 100
 #define  _JoystickMax 4096
 #define  _JoystickMin 0
@@ -19,6 +19,8 @@
 #define  _MotorSpeedReg3 TIM4->CCR3
 extern  TIM_HandleTypeDef htim4;
 
+void __Set_Speed(uint8_t speed,uint8_t napr,uint8_t power);
+	
 
 uint8_t  __MoveForwardJoy (uint16_t speed );
 uint8_t __MoveBackwardJoy  (uint16_t speed );

@@ -41,13 +41,21 @@
 
 uint16_t j=0;
 uint32_t ADC_BUF[3];
-uint8_t ADC_BUF_8b[32];
+uint8_t ADC_BUF_8b[10];
 bool  AdcRequesStart=false;
 
-uint8_t Ident[]={1,0,0,0,0,0};
+uint8_t Ident[10]={1,0,0,0,0,0,0,0,0,0};
 uint8_t cw=0;
 	uint8_t monitoreFlag=0;
 
+
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+		
 #define  _MotorPwmDevider 20
 #define  _MotorPwmPeriod 100
 #define  _JoystickMax 4096
@@ -59,9 +67,9 @@ uint8_t cw=0;
 
 
 /****************nrf****************/
-uint8_t payload_length;
+uint8_t payload_length=10;
 uint32_t i,k;
-uint8_t nRF24_payload[32];
+uint8_t nRF24_payload[10];
 nRF24_RXResult pipe;
 #define nRF24_WAIT_TIMEOUT         (uint32_t)0x000FFFFF
 
@@ -167,7 +175,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint8_t SerialModule[4];
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -212,6 +220,9 @@ PUTCHAR_PROTOTYPE
 
 
 
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -226,15 +237,15 @@ int main(void)
 	__UniqueID[0] = UniqueID[0];
 	__UniqueID[1] = UniqueID[1];
 	__UniqueID[2] = UniqueID[2];
-	uint8_t SerialModule[4];
+	
 	SerialModule[0]=__UniqueID[2];
 	SerialModule[1]=__UniqueID[2]>>8;
 	SerialModule[2]=__UniqueID[2]>>16;
 	SerialModule[3]=__UniqueID[2]>>24;
-	Ident[2]=SerialModule[0];
-	Ident[3]=SerialModule[1];
-	Ident[4]=SerialModule[2];
-	Ident[5]=SerialModule[3];
+	Ident[1]=SerialModule[0];
+	Ident[2]=SerialModule[1];
+
+	
 	
   /* USER CODE END 1 */
 
@@ -311,7 +322,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_250kbps);
+    nRF24_SetDataRate(nRF24_DR_2Mbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
@@ -331,12 +342,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     // Wake the transceiver
     nRF24_SetPowerMode(nRF24_PWR_UP);
 
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+
 
 		
 		nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
@@ -359,9 +365,12 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */                                
+  /* USER CODE BEGIN WHILE */     
+uint8_t m=0;	
   while (1)
   {
+		
+	
 			HAL_ADC_Start_IT(&hadc1);
 		/****************nrf****************/	
 			// Prepare data packet
@@ -376,32 +385,41 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 			case 0:
 				// addr #1
 				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR0);
-				payload_length = 6;
+
 				break;
 			case 1:
 				 //addr #2
 			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
-				payload_length = 6;
+
 				break;
 			case 2:
 				// addr #3
 			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-				//payload_length = 6;
+
 				break;
 			default:
 				break;
 		}
 			
     	// Print a payload
-    	printf("PAYLOAD:>");
-    	printf((char *)ADC_BUF_8b, payload_length);
-    	printf("< ... TX: ");
-
+//    	printf("PAYLOAD:>");
+//    	printf((char *)ADC_BUF_8b, payload_length);
+//    	printf("< ... TX: ");
+//ADC_BUF_8b[2]=m;
+		Ident[4]=ADC_BUF_8b[0];
+		Ident[5]=ADC_BUF_8b[1];
+		Ident[6]=ADC_BUF_8b[2];
+		Ident[7]=ADC_BUF_8b[3];
+		Ident[8]=ADC_BUF_8b[4];
+		Ident[9]=ADC_BUF_8b[5];
+		
+		
     	// Transmit a packet
-    	tx_res = nRF24_TransmitPacket(ADC_BUF_8b, payload_length);
+    	tx_res = nRF24_TransmitPacket(Ident, payload_length);
     	switch (tx_res) {
 			case nRF24_TX_SUCCESS:
 				printf("OK");
+				m++;
 				break;
 			case nRF24_TX_TIMEOUT:
 				printf("TIMEOUT");
@@ -426,7 +444,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 
 		if(monitoreFlag==1){
 					nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-	  nRF24_TransmitPacket(Ident, 6);
+	  nRF24_TransmitPacket(Ident, 10);
 		monitoreFlag=0;
 	}
 		
@@ -436,7 +454,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 
 		
 
-    	HAL_Delay(50);
+    	HAL_Delay(20   );
 			
 
 							

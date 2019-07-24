@@ -173,6 +173,7 @@
   */
 
 /* Private macros ------------------------------------------------------------*/
+extern uint8_t err;
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /** @addtogroup SPI_Private_Functions
