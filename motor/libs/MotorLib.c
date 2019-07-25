@@ -2,6 +2,28 @@
 
 
 
+void __Set_Speed(uint8_t speed,uint8_t napr,uint8_t power){
+
+	if(power==1){
+	if(napr==0){
+HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_SET);
+	}
+	else{
+		 HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET); HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_SET);
+	}
+}
+	else{
+		
+		     HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET); HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
+	}
+	_MotorSpeedReg4=speed;
+	_MotorSpeedReg3=speed;
+ HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+
+
+
+}
+
 
 uint8_t  __MoveForwardJoy (uint16_t speed){
 	

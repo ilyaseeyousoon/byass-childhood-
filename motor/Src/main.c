@@ -96,7 +96,7 @@ PUTCHAR_PROTOTYPE
 }
 
 
-uint8_t payload_length=6;
+uint8_t payload_length=10;
 uint32_t i,j,k;
 uint8_t monitoreFlag=0;
 // Buffer to store a payload of maximum width
@@ -106,7 +106,7 @@ uint8_t nRF24_payload[32]={0};
 nRF24_RXResult pipe;
 
 // Length of received payload
-uint8_t payload_length;
+
 
 // Helpers for transmit mode demo
 
@@ -190,15 +190,70 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	return nRF24_TX_ERROR;
 }
 
+//1- iamhere 2- return data valid
+void TransmitComand (uint8_t comandIdent,uint8_t tempArr[payload_length]){
+
+	uint8_t Ident[]={2,100,100,100,100,100,100,100,100,100};
+
+	Ident[1]=SerialModule[0];
+	Ident[2]=SerialModule[1];
+	Ident[3]=comandIdent;
+	
+	switch(comandIdent){
+		case 1:
+		//nop
+	
+		break;
+		
+		case 2:
+		Ident[4]=tempArr[4];
+		Ident[5]=tempArr[5];
+		Ident[6]=tempArr[6];
+		
+		break;
+	}
+			nRF24_SetPowerMode(nRF24_PWR_DOWN);
+    nRF24_SetTXPower(nRF24_TXPWR_0dBm);
+    nRF24_SetOperationalMode(nRF24_MODE_TX);
+    nRF24_ClearIRQFlags();
+	  nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+    nRF24_SetPowerMode(nRF24_PWR_UP);	
+	    
+	    tx_res = nRF24_TransmitPacket(Ident, payload_length);// data load
+	
+//	switch (tx_res) {
+//			case nRF24_TX_SUCCESS:
+//				printf("OK");
+//				break;
+//			case nRF24_TX_TIMEOUT:
+//				printf("TIMEOUT");
+//				break;
+//			case nRF24_TX_MAXRT:
+//				printf("MAX RETRANSMIT");
+//				break;
+//			default:
+//				printf("ERROR");
+//				break;
+//		}
+//    	printf("\r\n");
+		
+	
+	
+	
+			nRF24_SetPowerMode(nRF24_PWR_DOWN);
+    nRF24_SetOperationalMode(nRF24_MODE_RX);
+    nRF24_SetPowerMode(nRF24_PWR_UP);
+    nRF24_CE_H();
+}
+
 
 
 void TransmitIdentification (){
-uint8_t Ident[]={2,1,0,0,0,0};
+uint8_t Ident[]={2,100,100,100,100,100,100,100,100,100};
 
-	Ident[2]=SerialModule[0];
-	Ident[3]=SerialModule[1];
-	Ident[4]=SerialModule[2];
-	Ident[5]=SerialModule[3];
+	Ident[1]=SerialModule[0];
+	Ident[2]=SerialModule[1];
+	Ident[3]=1;
 
 	
 	
@@ -338,7 +393,7 @@ int main(void)
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_250kbps);
+    nRF24_SetDataRate(nRF24_DR_1Mbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
@@ -355,7 +410,7 @@ int main(void)
 		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
 		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
     //nRF24_SetRXPipe(nRF24_PIPE0, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_OFF, 6); 
+		nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_OFF, 10); 
 		//nRF24_SetRXPipe(nRF24_PIPE2, nRF24_AA_OFF, 6); 
 		//nRF24_SetRXPipe(nRF24_PIPE3, nRF24_AA_OFF, 6); 
 		//nRF24_SetRXPipe(nRF24_PIPE4, nRF24_AA_OFF, 6); 
@@ -385,14 +440,16 @@ int main(void)
 			nRF24_ClearIRQFlags();
 
 
-				
-MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
+__Set_Speed(nRF24_payload[4],nRF24_payload[5],nRF24_payload[6]);			
+//MoveAndTurn(nRF24_payload[2]*256+nRF24_payload[3],nRF24_payload[4]*256+nRF24_payload[5]);
 
 //						printf(" PAYLOAD:>");
 //			printf("%d,motor=%d,%d",nRF24_payload[0]*256+nRF24_payload[1],
 //				nRF24_payload[2]*256+nRF24_payload[3],
 //				nRF24_payload[4]*256+nRF24_payload[5]);
 //			printf("\r\n");
+				
+				TransmitComand(2,nRF24_payload);
 				
     	}
 			else{
