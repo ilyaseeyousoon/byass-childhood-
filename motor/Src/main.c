@@ -459,7 +459,7 @@ __Set_Speed(nRF24_payload[4],nRF24_payload[5],nRF24_payload[6]);
 	}
 }
 			
-			HAL_Delay(50);
+			//HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
