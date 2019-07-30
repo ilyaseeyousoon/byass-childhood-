@@ -316,7 +316,8 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     // The payload length depends on the logic address
 
     // Disable ShockBurst for all RX pipes
-    nRF24_DisableAA(0xFF);
+		
+   nRF24_DisableAA(0xFF);
 
     // Set RF channel
     nRF24_SetRFChannel(115);
@@ -333,24 +334,27 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     // Set TX power (maximum)
     nRF24_SetTXPower(nRF24_TXPWR_0dBm);
 
-    // Set operational mode (PTX == transmitter)
-    nRF24_SetOperationalMode(nRF24_MODE_TX);
+		nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
 
-    // Clear any pending IRQ flags
-    nRF24_ClearIRQFlags();
-
-    // Wake the transceiver
-    nRF24_SetPowerMode(nRF24_PWR_UP);
-
-
-
-		
 		nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
 		nRF24_SetAddr(nRF24_PIPE1, nRF24_ADDR1); // program address for RX pipe #1
 		nRF24_SetAddr(nRF24_PIPE2, nRF24_ADDR2); // program address for RX pipe #2
 		nRF24_SetAddr(nRF24_PIPE3, nRF24_ADDR3); // program address for RX pipe #3
 		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
 		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
+		
+
+//nRF24_SetAutoRetr(nRF24_ARD_2500us, 10); // configure auto retransmit: 10 retransmissions with pause of 2500s in between
+//nRF24_EnableAA(nRF24_PIPE1); // enable Auto-ACK for pipe#0 (for ACK packets)
+
+nRF24_SetOperationalMode(nRF24_MODE_TX); // switch transceiver to the TX mode
+  nRF24_ClearIRQFlags();
+nRF24_SetPowerMode(nRF24_PWR_UP); // wake-up transceiver (in case if it sleeping)
+// the nRF24 is ready for transmission, upload a payload, then pull CE pin to HIGH and it will transmit a packet...
+
+
+		
+
 
 
 		
@@ -372,40 +376,7 @@ uint8_t m=0;
 		
 	
 			HAL_ADC_Start_IT(&hadc1);
-		/****************nrf****************/	
-			// Prepare data packet
-		    	// Prepare data packet
 
-		    	// Logic address
-    	printf("ADDR#");
-    	printf("%d",pipe);
-
-    	// Configure the TX address and payload length
-    	switch (pipe) {
-			case 0:
-				// addr #1
-				nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR0);
-
-				break;
-			case 1:
-				 //addr #2
-			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR1);
-
-				break;
-			case 2:
-				// addr #3
-			//	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-
-				break;
-			default:
-				break;
-		}
-			
-    	// Print a payload
-//    	printf("PAYLOAD:>");
-//    	printf((char *)ADC_BUF_8b, payload_length);
-//    	printf("< ... TX: ");
-//ADC_BUF_8b[2]=m;
 		Ident[4]=ADC_BUF_8b[0];
 		Ident[5]=ADC_BUF_8b[1];
 		Ident[6]=ADC_BUF_8b[2];
@@ -416,37 +387,17 @@ uint8_t m=0;
 		
     	// Transmit a packet
     	tx_res = nRF24_TransmitPacket(Ident, payload_length);
-    	switch (tx_res) {
-			case nRF24_TX_SUCCESS:
-				printf("OK");
-				m++;
-				break;
-			case nRF24_TX_TIMEOUT:
-				printf("TIMEOUT");
-				break;
-			case nRF24_TX_MAXRT:
-				printf("MAX RETRANSMIT");
-				break;
-			default:
-				printf("ERROR");
-				break;
-		}
-    	printf("\r\n");
 
-//		    	pipe++;
-//    	if (pipe > 2) {
-//    		pipe = 0;
-//    	}
-			
-    	// Wait ~0.5s
+
+
 
 				
 
-		if(monitoreFlag==1){
-					nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-	  nRF24_TransmitPacket(Ident, 10);
-		monitoreFlag=0;
-	}
+//		if(monitoreFlag==1){
+//					nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+//	  nRF24_TransmitPacket(Ident, 10);
+//		monitoreFlag=0;
+//	}
 		
 	
 	
@@ -454,7 +405,7 @@ uint8_t m=0;
 
 		
 
-    	HAL_Delay(20   );
+    	HAL_Delay(200 );
 			
 
 							

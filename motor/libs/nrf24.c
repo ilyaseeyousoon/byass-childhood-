@@ -3,7 +3,7 @@
 
 #include "nrf24.h"
 
-extern uint8_t global_help;
+
 // Read a register
 // input:
 //   reg - number of register to read
@@ -413,9 +413,9 @@ void nRF24_WritePayload(uint8_t *pBuf, uint8_t length) {
 // return: one of nRF24_RX_xx values
 //   nRF24_RX_PIPEX - packet has been received from the pipe number X
 //   nRF24_RX_EMPTY - the RX FIFO is empty
-nRF24_RXResult nRF24_ReadPayload(uint8_t *pBuf, uint8_t templen) {
+nRF24_RXResult nRF24_ReadPayload(uint8_t *pBuf, uint8_t *length) {
 	uint8_t pipe;
-uint8_t *length=&templen;
+
 	// Extract a payload pipe number from the STATUS register
 	pipe = (nRF24_ReadReg(nRF24_REG_STATUS) & nRF24_MASK_RX_P_NO) >> 1;
 
@@ -423,9 +423,7 @@ uint8_t *length=&templen;
 	if (pipe < 6) {
 		// Get payload length
 		*length = nRF24_ReadReg(nRF24_RX_PW_PIPE[pipe]);
-//*length = nRF24_ReadReg(nRF24_RX_PW_PIPE[pipe]);
-		global_help=nRF24_ReadReg(nRF24_RX_PW_PIPE[pipe]);
-		
+
 		// Read a payload from the RX FIFO
 		if (*length) {
 			nRF24_ReadMBReg(nRF24_CMD_R_RX_PAYLOAD, pBuf, *length);

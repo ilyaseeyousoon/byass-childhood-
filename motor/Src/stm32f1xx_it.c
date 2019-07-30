@@ -87,14 +87,12 @@ void HardFault_Handler(void)
   /* USER CODE BEGIN HardFault_IRQn 0 */
 
   /* USER CODE END HardFault_IRQn 0 */
-                      while (1)
+  while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
-
-
 
 /**
   * @brief This function handles Memory management fault.
@@ -187,7 +185,7 @@ void SysTick_Handler(void)
 {
 	
   /* USER CODE BEGIN SysTick_IRQn 0 */
-if((HAL_GetTick()%1000)==0)
+if((HAL_GetTick()%5000)==0)
 	monitoreFlag=1;
 	
   /* USER CODE END SysTick_IRQn 0 */

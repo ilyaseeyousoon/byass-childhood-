@@ -1,6 +1,7 @@
 #include "MotorLib.h"
 
 
+
 void __Set_Speed(uint8_t speed,uint8_t napr,uint8_t power){
 
 	if(power==1){
@@ -22,14 +23,6 @@ HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);HAL_GPIO_WritePin(GPIOA,GPIO
 
 
 }
-
-
-
-
-
-
-
-
 
 
 uint8_t  __MoveForwardJoy (uint16_t speed){
