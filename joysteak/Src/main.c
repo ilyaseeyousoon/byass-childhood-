@@ -47,7 +47,7 @@ bool  AdcRequesStart=false;
 uint8_t Ident[10]={1,0,0,0,0,0,0,0,0,0};
 uint8_t cw=0;
 	uint8_t monitoreFlag=0;
-
+uint16_t count_packets=0;
 
     static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
 		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
@@ -91,14 +91,16 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	uint8_t status;
 
 	// Deassert the CE pin (in case if it still high)
-	nRF24_CE_L();
-
+	
+	nRF24_CE_H();
 	// Transfer a data from the specified buffer to the TX FIFO
 	nRF24_WritePayload(pBuf, length);
 
-	// Start a transmission by asserting CE pin (must be held at least 10us)
-	nRF24_CE_H();
 
+	// Start a transmission by asserting CE pin (must be held at least 10us)
+
+	//HAL_Delay(10);
+	nRF24_CE_L();
 	// Poll the transceiver status register until one of the following flags will be set:
 	//   TX_DS  - means the packet has been transmitted
 	//   MAX_RT - means the maximum number of TX retransmits happened
@@ -111,7 +113,7 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	} while (wait--);
 
 	// Deassert the CE pin (Standby-II --> Standby-I)
-	nRF24_CE_L();
+	//nRF24_CE_L();
 
 	if (!wait) {
 		// Timeout
@@ -370,11 +372,13 @@ nRF24_SetPowerMode(nRF24_PWR_UP); // wake-up transceiver (in case if it sleeping
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */     
-uint8_t m=0;	
+uint8_t m=0;
+bool test=1;
+
   while (1)
   {
 		
-	
+	if(!test){
 			HAL_ADC_Start_IT(&hadc1);
 
 		Ident[4]=ADC_BUF_8b[0];
@@ -388,7 +392,22 @@ uint8_t m=0;
     	// Transmit a packet
     	tx_res = nRF24_TransmitPacket(Ident, payload_length);
 
-
+	}
+	else{
+	
+		Ident[3]=4;
+		Ident[8]=count_packets>>8;
+		Ident[9]=count_packets;
+		
+		
+    	// Transmit a packet
+    	tx_res = nRF24_TransmitPacket(Ident, payload_length);
+		
+	
+	
+	
+	count_packets++;
+	}
 
 
 				
@@ -405,7 +424,7 @@ uint8_t m=0;
 
 		
 
-    	HAL_Delay(200 );
+    	HAL_Delay(2000);
 			
 
 							

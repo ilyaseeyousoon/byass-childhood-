@@ -103,13 +103,23 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-
+        HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+        HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+        HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=l; TIM4->CCR2= 0; TIM4->CCR3=255;	HAL_Delay(5);}// .0 0 255
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=0; TIM4->CCR2= l; TIM4->CCR3=255;	HAL_Delay(5);}// 0 .255 255
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=0; TIM4->CCR2= 255; TIM4->CCR3=l;	HAL_Delay(5);}// 0 255 .0
+		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=l; TIM4->CCR2= 255; TIM4->CCR3=0;	HAL_Delay(5);}// .255 255 0
+		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=255; TIM4->CCR2= l; TIM4->CCR3=0;	HAL_Delay(5);}//255 .0 0
+
+		
     /* USER CODE END WHILE */
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
 		HAL_Delay(1000);
@@ -271,7 +281,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 0;
+  htim4.Init.Period = 255 ;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
