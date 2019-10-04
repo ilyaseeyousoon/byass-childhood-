@@ -78,6 +78,8 @@ static void MX_ADC1_Init(void);
 		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
 		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
 		
+		
+		
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,6 +92,12 @@ PUTCHAR_PROTOTYPE
 
   return ch;
 }
+
+
+uint8_t offFlag=0;
+ uint8_t offFlag_2=0;
+uint32_t curTime=0;
+
 
 
 		uint32_t	cw=0;
@@ -339,6 +347,24 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+
+
+printf("Hello");	
+
+		 HAL_NVIC_DisableIRQ(EXTI0_IRQn); 
+			offFlag=1;
+	curTime=HAL_GetTick();	
+			if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
+{ 
+printf("Wakeup");	
+	//HAL_PWR_EnableBkUpAccess();
+__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+	offFlag=1;
+	curTime=HAL_GetTick();
+	
+} 
+
+
  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
  printf("\r\nSTM32F103RET6 is online.\r\n");
  
@@ -416,28 +442,31 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		
+		//__Set_Speed(99,0,1);		
+	//	HAL_Delay(2000);
 		    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
     		pipe = nRF24_ReadPayload(nRF24_payload, &payload_length);
 
 			nRF24_ClearIRQFlags();
 
-				if(temp_old!=(nRF24_payload[4]-1)){
-					temp_count_error++;
-					printf("temp_count_error=%d  ",temp_count_error);
-					printf("packet lose=%d%%  ",100/(temp_count/(temp_count_error-temp_count/80)));						
-					printf("temp_count=%d",temp_count);
-						printf("\r\n");
-				}
-	temp_count++;
+//				if(temp_old!=(nRF24_payload[4]-1)){
+//					temp_count_error++;
+//					printf("temp_count_error=%d  ",temp_count_error);
+//					printf("packet lose=%d%%  ",100/(temp_count/(temp_count_error-temp_count/80)));						
+//					printf("temp_count=%d",temp_count);
+//						printf("\r\n");
+//				}
+//	temp_count++;
 			
-	temp_old=nRF24_payload[4];			
+//	temp_old=nRF24_payload[4];			
 
-__Set_Speed(nRF24_payload[4],nRF24_payload[5],nRF24_payload[6]);		
+__Set_Speed(nRF24_payload[4],nRF24_payload[5],nRF24_payload[6]);	
+						
 TransmitComand(2,nRF24_payload);	
     	}
 			else{
 	if(monitoreFlag==1){
+		
 				TransmitIdentification();
 		monitoreFlag=0;
 	}
