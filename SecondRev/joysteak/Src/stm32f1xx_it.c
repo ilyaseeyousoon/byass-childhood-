@@ -28,6 +28,12 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 extern uint8_t monitoreFlag;
+
+extern  uint8_t offFlag;
+extern  uint8_t offFlag_2;
+extern  uint32_t curTime;
+uint16_t counterOff=0;
+
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -185,8 +191,54 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-if((HAL_GetTick()%2000)==0)
+if((HAL_GetTick()%5000)==0)
 	monitoreFlag=1;
+
+
+
+	if(HAL_GetTick()%2000==0 && __HAL_PWR_GET_FLAG(PWR_FLAG_SB) == RESET){
+HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+ HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	}
+	if(offFlag==1 && (HAL_GetTick()- curTime)<2000)
+	{
+	    if(HAL_GPIO_ReadPin( GPIOA,  GPIO_PIN_0)==1){				
+		counterOff++;					
+			}
+	}
+	else if(offFlag==1 && offFlag_2==0 && counterOff<1500){
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+		printf("Bye");	
+	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+	__HAL_PWR_CLEAR_FLAG(PWR_CSR_WUF);
+	HAL_PWR_EnterSTANDBYMode();
+	}
+	else if(offFlag==1 && offFlag_2==1 && counterOff>1500){
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+				printf("Bye_2");	
+	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+	__HAL_PWR_CLEAR_FLAG(PWR_CSR_WUF);
+	HAL_PWR_EnterSTANDBYMode();
+	}
+	else if(offFlag==1 && HAL_GPIO_ReadPin( GPIOA,  GPIO_PIN_0)==0){
+	offFlag=2;
+	offFlag_2=0;
+	counterOff=0;
+		printf("WORK");	
+	}
+	else if(offFlag==1){
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);
+	}
+		
+	
+	
+	if(offFlag==2 && (HAL_GPIO_ReadPin( GPIOA,  GPIO_PIN_0)==1)){
+		printf("OFF START");
+	offFlag=1;
+	curTime=HAL_GetTick()	;
+	offFlag_2=1;
+	}
+	
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */

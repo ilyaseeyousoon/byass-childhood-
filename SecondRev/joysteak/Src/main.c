@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include "nrf24.h"
 #include "nrf24_hal.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,8 +40,12 @@
 #endif /* __GNUC__ */
 
 
-uint16_t j=0;
-uint32_t ADC_BUF[3];
+uint8_t offFlag=0;
+ uint8_t offFlag_2=0;
+uint32_t curTime=0;
+		
+		uint16_t j=0;
+uint32_t ADC_BUF[2];
 uint8_t ADC_BUF_8b[10];
 bool  AdcRequesStart=false;
 
@@ -144,7 +149,6 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	return nRF24_TX_ERROR;
 }
 
-/****************nrf****************/
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -178,20 +182,15 @@ static void MX_ADC1_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t SerialModule[4];
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
 
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-uint32_t val[3];
+uint32_t val[2];
 
 	
 	val[0]=ADC_BUF[0];
 	val[1]=ADC_BUF[1];
-	val[2]=ADC_BUF[2];
+
 
 	
 	
@@ -199,17 +198,10 @@ uint32_t val[3];
 	ADC_BUF_8b[1]=ADC_BUF[0];
 	ADC_BUF_8b[2]=ADC_BUF[1]>>8;
 	ADC_BUF_8b[3]=ADC_BUF[1];
-	ADC_BUF_8b[4]=ADC_BUF[2]>>8;
-	ADC_BUF_8b[5]=ADC_BUF[2];
-	printf("%d:Bt=%d Y=%d X=%d \r\n",j, val[0],val[1],val[2]);
 
+	printf("%d:Y=%d X=%d \r\n",j, val[0],val[1]);
 	
-
-		
-		
-		
 }
-
 
 PUTCHAR_PROTOTYPE
 {
@@ -221,9 +213,10 @@ PUTCHAR_PROTOTYPE
 }
 
 
+/* USER CODE END PFP */
 
-
-
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
 
@@ -234,7 +227,8 @@ PUTCHAR_PROTOTYPE
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
+
+		volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
 	volatile uint32_t __UniqueID[3];
 	__UniqueID[0] = UniqueID[0];
 	__UniqueID[1] = UniqueID[1];
@@ -247,7 +241,6 @@ int main(void)
 	Ident[1]=SerialModule[0];
 	Ident[2]=SerialModule[1];
 
-	
 	
   /* USER CODE END 1 */
 
@@ -277,21 +270,28 @@ int main(void)
 
 
 
-__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+printf("Hello");	
+
+		 HAL_NVIC_DisableIRQ(EXTI0_IRQn); 
+			offFlag=1;
+	curTime=HAL_GetTick();	
+			if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
+{ 
+printf("Wakeup");	
+	//HAL_PWR_EnableBkUpAccess();
+__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
+	offFlag=1;
+	curTime=HAL_GetTick();
+	
+} 
 
 
-
-
-//HAL_Delay(5000);
-
-
-/****************nrf****************/
 printf("\r\nSTM32F103RET6 is online.\r\n");
 
     // RX/TX disabled
     nRF24_CE_L();
 		
-		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
 		    // Configure the nRF24L01+
     printf("nRF24L01+ check: ");
 		
@@ -301,25 +301,12 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     }
 		
 	printf("OK\r\n");
-		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
 		  // Initialize the nRF24L01 to its default state
     nRF24_Init();
-		
-    // This is simple transmitter (to multiple logic addresses):
-	//   - TX addresses and payload lengths:
-    //       'WBC', 11 bytes
-    //       '0xE7 0x1C 0xE3', 5 bytes
-    //       '0xE7 0x1C 0xE6', 32 bytes
-	//   - RF channel: 115 (2515MHz)
-	//   - data rate: 250kbps (minimum possible, to increase reception reliability)
-	//   - CRC scheme: 2 byte
 
-    // The transmitter sends a data packets to the three logic addresses without Auto-ACK (ShockBurst disabled)
-    // The payload length depends on the logic address
-
-    // Disable ShockBurst for all RX pipes
 		
-   nRF24_DisableAA(0xFF);
+		  nRF24_DisableAA(0xFF);
 
     // Set RF channel
     nRF24_SetRFChannel(115);
@@ -353,32 +340,34 @@ nRF24_SetOperationalMode(nRF24_MODE_TX); // switch transceiver to the TX mode
   nRF24_ClearIRQFlags();
 nRF24_SetPowerMode(nRF24_PWR_UP); // wake-up transceiver (in case if it sleeping)
 // the nRF24 is ready for transmission, upload a payload, then pull CE pin to HIGH and it will transmit a packet...
-
-
-		
-
-
-
 		
 		
     // The main loop
     j = 0; pipe = 0;
 		
 /****************nrf****************/		
-				HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,3);
+				HAL_ADC_Start_DMA(&hadc1,(uint32_t*)ADC_BUF,2);
 			HAL_ADC_Start_IT(&hadc1);	
 			//payload_length = 6;
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */     
+  /* USER CODE BEGIN WHILE */
 uint8_t m=0;
-bool test=1;
+bool test=0;
 
+
+
+
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
 		
-	if(!test){
+		
+			if(!test){
 			HAL_ADC_Start_IT(&hadc1);
 
 		Ident[4]=ADC_BUF_8b[0];
@@ -402,90 +391,20 @@ bool test=1;
 		
     	// Transmit a packet
     	tx_res = nRF24_TransmitPacket(Ident, payload_length);
-		
-	
-	
-	
+
 	count_packets++;
 	}
 
+    	//HAL_Delay(2000);
+			
 
-				
-
-//		if(monitoreFlag==1){
-//					nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-//	  nRF24_TransmitPacket(Ident, 10);
-//		monitoreFlag=0;
-//	}
-		
 	
-	
-
-
-		
-
-    	HAL_Delay(2000);
-			
-
-							
-
-							
-    	
-						
-			
-    }
-
-    
-    	
-		/****************nrf****************/	
-		/*
-		if(AdcRequesStart==true && j<=100){
-			
-				    	// Print a payload
-    	//printf("PAYLOAD:>");
-    	//printf("< ... TX: ");
-
-    	// Transmit a packet
-    	tx_res = nRF24_TransmitPacket(ADC_BUF_8b, payload_length);
-    	switch (tx_res) {
-			case nRF24_TX_SUCCESS:
-				printf("OK");
-				break;
-			case nRF24_TX_TIMEOUT:
-				printf("TIMEOUT");
-				break;
-			case nRF24_TX_MAXRT:
-				printf("MAX RETRANSMIT");
-				break;
-			default:
-				printf("ERROR");
-				break;
-		}
-    	printf("\r\n");
-
-	HAL_ADC_Start_IT(&hadc1);	
-			j++;
-			HAL_Delay(2000);
-		}
-		else{
-				j=0;
-				AdcRequesStart=false;
-				HAL_ADC_Stop(&hadc1);
-		                                                             
-		}	
-		
-		if(AdcRequesStart==false)
-		{
-		HAL_Delay(5000);
-		AdcRequesStart=true;
-		}
-		*/
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
+}
 
 /**
   * @brief System Clock Configuration
@@ -556,14 +475,14 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 3;
+  hadc1.Init.NbrOfConversion = 2;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure Regular Channel 
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_8;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -572,16 +491,8 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel 
   */
-  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Channel = ADC_CHANNEL_9;
   sConfig.Rank = ADC_REGULAR_RANK_2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel 
-  */
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -646,7 +557,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 256000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -688,23 +599,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3|GPIO_PIN_4, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
@@ -712,18 +615,25 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA5 PA6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+  /*Configure GPIO pins : PA1 PA7 PA8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_7|GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA3 PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : PB12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);

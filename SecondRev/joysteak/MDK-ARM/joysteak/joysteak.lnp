@@ -1,10 +1,10 @@
 --cpu Cortex-M3
 "joysteak\startup_stm32f103xb.o"
+"joysteak\nrf24.o"
+"joysteak\nrf24_hal.o"
 "joysteak\main.o"
 "joysteak\stm32f1xx_it.o"
 "joysteak\stm32f1xx_hal_msp.o"
-"joysteak\nrf24.o"
-"joysteak\nrf24_hal.o"
 "joysteak\stm32f1xx_hal_gpio_ex.o"
 "joysteak\stm32f1xx_hal_adc.o"
 "joysteak\stm32f1xx_hal_adc_ex.o"
