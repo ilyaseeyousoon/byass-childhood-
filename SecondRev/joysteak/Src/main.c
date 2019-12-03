@@ -54,6 +54,11 @@ uint8_t cw=0;
 	uint8_t monitoreFlag=0;
 uint16_t count_packets=0;
 
+uint16_t zero_point_X=0;
+uint16_t zero_point_Y=0;
+uint16_t data_0_200[2];
+
+
     static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
 		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
 		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
@@ -88,6 +93,46 @@ typedef enum {
 nRF24_TXResult tx_res;
 
 
+
+
+void JoyDataConvert(uint16_t X,uint16_t Y){
+
+
+if(X<=zero_point_X-50 && X>0  ){
+data_0_200[0]=(zero_point_X-X)/(zero_point_X/100)-1;
+}
+else if (X>zero_point_X+50){
+data_0_200[0]=(X)/(zero_point_X/100);
+}
+else
+if(!(X<=zero_point_X-50) && !(X>zero_point_X+50))
+data_0_200[0]=0;
+else if (X==0)
+	data_0_200[0]=100;
+
+
+
+if(Y<=zero_point_Y-50 && Y>0  ){
+data_0_200[1]=(zero_point_Y-Y)/(zero_point_Y/100)-1;
+}
+else if (Y>zero_point_Y+50){
+data_0_200[1]=(Y)/(zero_point_Y/100);
+}
+else
+if(!(Y<=zero_point_Y-50) && !(Y>zero_point_Y+50))
+data_0_200[1]=0;
+else if (Y==0)
+	data_0_200[1]=100;
+
+
+if (data_0_200[0]>200)
+data_0_200[0]=200;
+
+if (data_0_200[1]>200)
+data_0_200[1]=200;
+
+
+}
 
 
 
@@ -186,20 +231,12 @@ uint8_t SerialModule[4];
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 uint32_t val[2];
-
-	
-	val[0]=ADC_BUF[0];
-	val[1]=ADC_BUF[1];
-
-
-	
 	
 	ADC_BUF_8b[0]=ADC_BUF[0]>>8;
 	ADC_BUF_8b[1]=ADC_BUF[0];
 	ADC_BUF_8b[2]=ADC_BUF[1]>>8;
 	ADC_BUF_8b[3]=ADC_BUF[1];
 
-	printf("%d:Y=%d X=%d \r\n",j, val[0],val[1]);
 	
 }
 
@@ -312,7 +349,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
     nRF24_SetRFChannel(115);
 
     // Set data rate
-    nRF24_SetDataRate(nRF24_DR_2Mbps);
+    nRF24_SetDataRate(nRF24_DR_1Mbps);
 
     // Set CRC scheme
     nRF24_SetCRCScheme(nRF24_CRC_2byte);
@@ -357,7 +394,10 @@ uint8_t m=0;
 bool test=0;
 
 
+zero_point_X=ADC_BUF_8b[0]*256+ADC_BUF_8b[1];
+zero_point_Y=ADC_BUF_8b[2]*256+ADC_BUF_8b[3];
 
+	
 
   /* USER CODE END 2 */
 
@@ -366,16 +406,18 @@ bool test=0;
   while (1)
   {
 		
+		JoyDataConvert(ADC_BUF_8b[0]*256+ADC_BUF_8b[1],ADC_BUF_8b[2]*256+ADC_BUF_8b[3]);
+		
 		
 			if(!test){
 			HAL_ADC_Start_IT(&hadc1);
 
-		Ident[4]=ADC_BUF_8b[0];
-		Ident[5]=ADC_BUF_8b[1];
-		Ident[6]=ADC_BUF_8b[2];
-		Ident[7]=ADC_BUF_8b[3];
-		Ident[8]=ADC_BUF_8b[4];
-		Ident[9]=ADC_BUF_8b[5];
+		Ident[4]=data_0_200[0]>>8;
+		Ident[5]=data_0_200[0];
+		Ident[6]=data_0_200[1]>>8;
+		Ident[7]=data_0_200[1];
+		Ident[8]=0;
+		Ident[9]=HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1);
 		
 		
     	// Transmit a packet

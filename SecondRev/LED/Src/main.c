@@ -138,13 +138,18 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
   while (1)
   {
 		
-				for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
-		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=l; TIM4->CCR2= 0; TIM4->CCR3=255;	HAL_Delay(5);}// .0 0 255
-		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=0; TIM4->CCR2= l; TIM4->CCR3=255;	HAL_Delay(5);}// 0 .255 255
-		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=0; TIM4->CCR2= 255; TIM4->CCR3=l;	HAL_Delay(5);}// 0 255 .0
-		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=l; TIM4->CCR2= 255; TIM4->CCR3=0;	HAL_Delay(5);}// .255 255 0
-		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=255; TIM4->CCR2= l; TIM4->CCR3=0;	HAL_Delay(5);}//255 .0 0
+//				for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=255; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
+//		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=l; TIM4->CCR2= 0; TIM4->CCR3=255;	HAL_Delay(5);}// .0 0 255
+//		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=0; TIM4->CCR2= l; TIM4->CCR3=255;	HAL_Delay(5);}// 0 .255 255
+//		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=0; TIM4->CCR2= 255; TIM4->CCR3=l;	HAL_Delay(5);}// 0 255 .0
+//		for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=l; TIM4->CCR2= 255; TIM4->CCR3=0;	HAL_Delay(5);}// .255 255 0
+//		for(uint16_t l=255;l!=0;l--){ TIM4->CCR1=255; TIM4->CCR2= l; TIM4->CCR3=0;	HAL_Delay(5);}//255 .0 0
 
+					for(uint16_t l=0;l<=255;l++){ TIM4->CCR1=0; TIM4->CCR2= 0; TIM4->CCR3=l;	HAL_Delay(50);}//255 0 .255
+
+		
+		
+		
 		
     /* USER CODE END WHILE */
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_3,GPIO_PIN_SET);
