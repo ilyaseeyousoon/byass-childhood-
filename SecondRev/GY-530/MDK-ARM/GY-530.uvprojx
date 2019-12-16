@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\libs</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\libs;..\libs\RobikLib</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -550,6 +550,16 @@
               <FileName>nrf24_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libs\nrf24_hal.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>RobikLib</GroupName>
+          <Files>
+            <File>
+              <FileName>Robik.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libs\RobikLib\Robik.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -23,36 +23,24 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ranging_vl53l0x.h"
-#include "vl53l0x_api.h"
-#include "nrf24.h"
-#include "nrf24_hal.h"
+#include "Robik.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#ifdef __GNUC__
-/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
 
 
 
-uint8_t offFlag=0;
- uint8_t offFlag_2=0;
-uint32_t curTime=0;
-uint8_t monitoreFlag=0;
-	uint8_t SerialModule[4];
-uint8_t payload_length=10;
-uint8_t Ident[10]={4,0,0,0,0,0,0,0,0,0};
-uint8_t test=100;
+
+	
+
+		uint8_t Ident[10]={4,0,0,0,0,0,0,0,0,0};
 		uint8_t temp_buf[10]={0};	
-		
-				uint32_t temp_dist=0;
+		uint8_t nRF24_payload[32]={0};
+		uint32_t temp_dist=0;
 		uint8_t i=0;
+		uint8_t test=100;
+		extern uint8_t SerialModule[4];
 		
 /* USER CODE END PTD */
 
@@ -88,12 +76,7 @@ static void MX_TIM3_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+
 		
 /* USER CODE END PFP */
 
@@ -102,218 +85,12 @@ static void MX_I2C1_Init(void);
 	static VL53L0X_Error initSensor( VL53L0X_Dev_t * device );
 	
 	// Buffer to store a payload of maximum width
-uint8_t nRF24_payload[32]={0};
+
 
 // Pipe number
 nRF24_RXResult pipe;
-#define nRF24_WAIT_TIMEOUT         (uint32_t)0x000FFFFF
-
-// Result of packet transmission
-typedef enum {
-	nRF24_TX_ERROR  = (uint8_t)0x00, // Unknown error
-	nRF24_TX_SUCCESS,                // Packet has been transmitted successfully
-	nRF24_TX_TIMEOUT,                // It was timeout during packet transmit
-	nRF24_TX_MAXRT                   // Transmit failed with maximum auto retransmit count
-} nRF24_TXResult;
-
-nRF24_TXResult tx_res;
 
 
-	
-	// Function to transmit data packet
-// input:
-//   pBuf - pointer to the buffer with data to transmit
-//   length - length of the data buffer in bytes
-// return: one of nRF24_TX_xx values
-nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
-	volatile uint32_t wait = nRF24_WAIT_TIMEOUT;
-	uint8_t status;
-
-	// Deassert the CE pin (in case if it still high)
-	nRF24_CE_L();
-
-	// Transfer a data from the specified buffer to the TX FIFO
-	nRF24_WritePayload(pBuf, length);
-
-	// Start a transmission by asserting CE pin (must be held at least 10us)
-	nRF24_CE_H();
-
-	// Poll the transceiver status register until one of the following flags will be set:
-	//   TX_DS  - means the packet has been transmitted
-	//   MAX_RT - means the maximum number of TX retransmits happened
-	// note: this solution is far from perfect, better to use IRQ instead of polling the status
-	do {
-		status = nRF24_GetStatus();
-		if (status & (nRF24_FLAG_TX_DS | nRF24_FLAG_MAX_RT)) {
-			break;
-		}
-	} while (wait--);
-
-	// Deassert the CE pin (Standby-II --> Standby-I)
-	nRF24_CE_L();
-
-	if (!wait) {
-		// Timeout
-		return nRF24_TX_TIMEOUT;
-	}
-
-	// Check the flags in STATUS register
-//	printf("[");
-//	printf("%d",status);
-//	printf("] ");
-
-	// Clear pending IRQ flags
-    nRF24_ClearIRQFlags();
-
-	if (status & nRF24_FLAG_MAX_RT) {
-		// Auto retransmit counter exceeds the programmed maximum limit (FIFO is not removed)
-		return nRF24_TX_MAXRT;
-	}
-
-	if (status & nRF24_FLAG_TX_DS) {
-		// Successful transmission
-		return nRF24_TX_SUCCESS;
-	}
-
-	// Some banana happens, a payload remains in the TX FIFO, flush it
-	nRF24_FlushTX();
-
-	return nRF24_TX_ERROR;
-}
-
-
-//1- iamhere 2- return data valid
-void TransmitComand (uint8_t comandIdent,uint8_t tempArr[payload_length]){
-
-	uint8_t Ident[]={4,100,100,100,100,100,100,100,100,100};
-
-	Ident[1]=SerialModule[0];
-	Ident[2]=SerialModule[1];
-	Ident[3]=comandIdent;
-	
-	switch(comandIdent){
-		case 1:
-		//nop
-	
-		break;
-		
-		case 2:
-		Ident[4]=tempArr[4];
-		Ident[5]=tempArr[5];
-		Ident[6]=tempArr[6];
-		
-		break;
-		
-		
-			case 4:
-		Ident[4]=tempArr[4];
-		
-		break;
-			
-	}
-	
-	
-	
-	
-	
-	
-			nRF24_SetPowerMode(nRF24_PWR_DOWN);
-    nRF24_SetTXPower(nRF24_TXPWR_0dBm);
-    nRF24_SetOperationalMode(nRF24_MODE_TX);
-    nRF24_ClearIRQFlags();
-	  nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-    nRF24_SetPowerMode(nRF24_PWR_UP);	
-	    
-	    tx_res = nRF24_TransmitPacket(Ident, payload_length);// data load
-	
-//	switch (tx_res) {
-//			case nRF24_TX_SUCCESS:
-//				printf("OK");
-//				break;
-//			case nRF24_TX_TIMEOUT:
-//				printf("TIMEOUT");
-//				break;
-//			case nRF24_TX_MAXRT:
-//				printf("MAX RETRANSMIT");
-//				break;
-//			default:
-//				printf("ERROR");
-//				break;
-//		}
-//    	printf("\r\n");
-		
-	
-	
-	
-			nRF24_SetPowerMode(nRF24_PWR_DOWN);
-    nRF24_SetOperationalMode(nRF24_MODE_RX);
-    nRF24_SetPowerMode(nRF24_PWR_UP);
-    nRF24_CE_H();
-}
-
-void TransmitIdentification (){
-uint8_t Ident[]={2,100,100,100,100,100,100,100,100,100};
-
-
-	Ident[1]=SerialModule[0];
-	Ident[2]=SerialModule[1];
-	Ident[3]=1;
-
-	
-	
-  	nRF24_SetPowerMode(nRF24_PWR_DOWN);
-    // Set TX power (maximum)
-    nRF24_SetTXPower(nRF24_TXPWR_0dBm);
-    // Set operational mode (PTX == transmitter)
-    nRF24_SetOperationalMode(nRF24_MODE_TX);
-    // Clear any pending IRQ flags
-    nRF24_ClearIRQFlags();
-	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
-    // Wake the transceiver
-    nRF24_SetPowerMode(nRF24_PWR_UP);
-	
-	
-	    	tx_res = nRF24_TransmitPacket(Ident, payload_length);
-    	switch (tx_res) {
-			case nRF24_TX_SUCCESS:
-				printf("OK");
-				break;
-			case nRF24_TX_TIMEOUT:
-				printf("TIMEOUT");
-				break;
-			case nRF24_TX_MAXRT:
-				printf("MAX RETRANSMIT");
-				break;
-			default:
-				printf("ERROR");
-				break;
-		}
-    	printf("\r\n");
-		
-			nRF24_SetPowerMode(nRF24_PWR_DOWN);
-		
-		 // Set operational mode (PRX == receiver)
-    nRF24_SetOperationalMode(nRF24_MODE_RX);
-
-    // Wake the transceiver
-    nRF24_SetPowerMode(nRF24_PWR_UP);
-
-    // Put the transceiver to the RX mode
-    nRF24_CE_H();
-		
-	
-	
-
-}
-
-PUTCHAR_PROTOTYPE
-{
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the USART1 and Loop until the end of transmission */
-  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
-
-  return ch;
-}
 
 /* USER CODE END 0 */
 
@@ -324,7 +101,7 @@ PUTCHAR_PROTOTYPE
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-		volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
+			volatile uint32_t *UniqueID = (uint32_t *)0x1FFFF7E8;
 	volatile uint32_t __UniqueID[3];
 	__UniqueID[0] = UniqueID[0];
 	__UniqueID[1] = UniqueID[1];
@@ -334,6 +111,7 @@ int main(void)
 	SerialModule[1]=__UniqueID[2]>>8;
 	SerialModule[2]=__UniqueID[2]>>16;
 	SerialModule[3]=__UniqueID[2]>>24;
+//void SerialNumbFunc();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -361,6 +139,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
+OnAction();
+
 static VL53L0X_Dev_t device;
 static volatile uint16_t res = 0;
 
@@ -375,53 +155,34 @@ static volatile uint16_t res = 0;
 		{
 		test++;
 		}
-	
-	
-	
-	
 
  static uint8_t data_ready;      
-    static VL53L0X_RangingMeasurementData_t result;
-    static VL53L0X_Error Status;    
-		
-		
-		printf("Hello");	
-
-		 HAL_NVIC_DisableIRQ(EXTI0_IRQn); 
-			offFlag=1;
-	curTime=HAL_GetTick();	
-			if (__HAL_PWR_GET_FLAG(PWR_FLAG_SB) == SET) 
-{ 
-printf("Wakeup");	
-	//HAL_PWR_EnableBkUpAccess();
-__HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
-	offFlag=1;
-	curTime=HAL_GetTick();
+ static VL53L0X_RangingMeasurementData_t result;
+ static VL53L0X_Error Status;    
 	
-} 
-
+		
+		
 
  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
- printf("\r\nSTM32F103RET6 is online.\r\n");
+
  
      // RX/TX disabled
     nRF24_CE_L();
 		
-		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
-			 HAL_Delay(2000);
-		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+//		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+//			 HAL_Delay(2000);
+//		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
 
-							  HAL_Delay(3000);
-		    // Configure the nRF24L01+
-    printf("nRF24L01+ check: ");
+		
+ 
 		
     while (!nRF24_Check()) {
-    	printf("FAIL\r\n");
+ 
 			HAL_Delay(1000);
     }
 		
-	printf("OK\r\n");
-		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3,GPIO_PIN_SET);
+
+//		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3,GPIO_PIN_SET);
 		  // Initialize the nRF24L01 to its default state
     nRF24_Init();
 		
@@ -477,7 +238,7 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
   while (1)
   {
 
-		for( i=0;i<10;i++){
+		for( i=0;i<2;i++){
 			
 			        Status=VL53L0X_GetMeasurementDataReady(&device, &data_ready);
         
@@ -492,13 +253,22 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
         }
 				
 				
-	temp_dist+=result.RangeMilliMeter/20;
+	temp_dist+=result.RangeMilliMeter/10;
 				
 				
 				
 				
 			}
-		temp_buf[4]=temp_dist/10;			
+		temp_buf[4]=temp_dist/10;		
+			
+			if(result.RangeStatus==0){
+			
+				temp_buf[5]=0;	
+			}
+			else{
+			temp_buf[5]=1;	
+			}
+			
 TransmitComand(4,temp_buf);
 	
 temp_dist	=0;		
@@ -508,6 +278,10 @@ temp_dist	=0;
 
     /* USER CODE BEGIN 3 */
   }
+	
+	
+	HAL_Delay(300);
+	
   /* USER CODE END 3 */
 }
 

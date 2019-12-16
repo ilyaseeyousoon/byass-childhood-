@@ -110,7 +110,8 @@ uint32_t i,j,k;
 uint8_t monitoreFlag=0;
 // Buffer to store a payload of maximum width
 uint8_t nRF24_payload[32]={0};
-
+uint32_t test_time=0;
+uint32_t test_time2=0;
 // Pipe number
 nRF24_RXResult pipe;
 #define nRF24_WAIT_TIMEOUT         (uint32_t)0x000FFFFF
@@ -437,13 +438,14 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 //__Set_Speed(50,1,1);		
 
   /* USER CODE END 2 */
-
+//__Set_Speed(30,1,1);	
+//test_time=HAL_GetTick();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 		//__Set_Speed(99,0,1);		
-	//	HAL_Delay(2000);
+
 		    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
     		pipe = nRF24_ReadPayload(nRF24_payload, &payload_length);
 
@@ -459,12 +461,20 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 //	temp_count++;
 			
 //	temp_old=nRF24_payload[4];			
-
+if(nRF24_payload[0]==2 &&nRF24_payload[1]==SerialModule[0]  && nRF24_payload[2]==SerialModule[1] )
 __Set_Speed(nRF24_payload[4],nRF24_payload[5],nRF24_payload[6]);	
-						
-TransmitComand(2,nRF24_payload);	
+		//	__Set_Speed(70,1,1);				
+//TransmitComand(2,nRF24_payload);	
+					test_time=HAL_GetTick();	
     	}
 			else{
+				
+				if((HAL_GetTick()-test_time)>=3000)
+				{
+				__Set_Speed(0,0,0);	
+				
+				}
+				
 	if(monitoreFlag==1){
 		
 				TransmitIdentification();
@@ -629,7 +639,7 @@ static void MX_TIM3_Init(void)
   htim3.Init.Prescaler = _MotorPwmDevider;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = _MotorPwmPeriod;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {

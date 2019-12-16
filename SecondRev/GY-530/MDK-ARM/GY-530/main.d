@@ -28,6 +28,7 @@ gy-530\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 gy-530\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 gy-530\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 gy-530\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
+gy-530\main.o: ..\libs\RobikLib\Robik.h
 gy-530\main.o: ..\libs\ranging_vl53l0x.h
 gy-530\main.o: ..\libs\vl53l0x_api.h
 gy-530\main.o: ..\libs\vl53l0x_api_strings.h

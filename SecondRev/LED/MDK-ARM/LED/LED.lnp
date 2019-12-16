@@ -19,6 +19,8 @@
 "led\stm32f1xx_hal_flash.o"
 "led\stm32f1xx_hal_flash_ex.o"
 "led\system_stm32f1xx.o"
+"led\nrf24.o"
+"led\nrf24_hal.o"
 --library_type=microlib --strict --scatter "LED\LED.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

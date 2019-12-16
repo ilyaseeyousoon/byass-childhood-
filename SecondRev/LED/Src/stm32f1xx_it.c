@@ -31,6 +31,7 @@ extern  uint8_t offFlag;
 extern  uint8_t offFlag_2;
 extern  uint32_t curTime;
 uint16_t counterOff=0;
+extern uint8_t monitoreFlag;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -186,7 +187,8 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+if((HAL_GetTick()%2000)==0)
+	monitoreFlag=1;
 	
 		if(HAL_GetTick()%2000==0 && __HAL_PWR_GET_FLAG(PWR_FLAG_SB) == RESET){
 HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);

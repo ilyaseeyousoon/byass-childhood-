@@ -189,7 +189,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-if((HAL_GetTick()%1000)==0)
+if((HAL_GetTick()%2000)==0)
 	monitoreFlag=1;
 
 

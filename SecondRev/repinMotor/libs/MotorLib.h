@@ -15,7 +15,7 @@
 //#define  _JoystickUpToZero 3200
 
 
-#define  _MotorPwmDevider 5000
+#define  _MotorPwmDevider 250
 #define  _MotorPwmPeriod 100
 #define  _JoystickMax 4096
 #define  _JoystickMin 0

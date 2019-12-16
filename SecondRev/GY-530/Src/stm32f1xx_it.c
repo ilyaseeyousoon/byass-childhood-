@@ -58,13 +58,14 @@
 /* External variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi2;
 extern UART_HandleTypeDef huart1;
-/* USER CODE BEGIN EV */
-extern uint8_t monitoreFlag;
 
+/* USER CODE BEGIN EV */
+uint8_t offFlag_2=0;
+uint8_t monitoreFlag=0;
 extern  uint8_t offFlag;
-extern  uint8_t offFlag_2;
 extern  uint32_t curTime;
 uint16_t counterOff=0;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -188,8 +189,8 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
 //  /* USER CODE BEGIN SysTick_IRQn 0 */
-if((HAL_GetTick()%1000)==0)
-	monitoreFlag=1;
+//if((HAL_GetTick()%1000)==0)
+//	monitoreFlag=1;
 
 
 
@@ -205,14 +206,14 @@ HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
 	}
 	else if(offFlag==1 && offFlag_2==0 && counterOff<1500){
 		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
-		printf("Bye");	
+		
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
 	__HAL_PWR_CLEAR_FLAG(PWR_CSR_WUF);
 	HAL_PWR_EnterSTANDBYMode();
 	}
 	else if(offFlag==1 && offFlag_2==1 && counterOff>1500){
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
-				printf("Bye_2");	
+				;	
 	HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
 	__HAL_PWR_CLEAR_FLAG(PWR_CSR_WUF);
 	HAL_PWR_EnterSTANDBYMode();
@@ -221,7 +222,7 @@ HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
 	offFlag=2;
 	offFlag_2=0;
 	counterOff=0;
-		printf("WORK");	
+		
 	}
 	else if(offFlag==1){
 	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_SET);
@@ -230,7 +231,7 @@ HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
 	
 	
 	if(offFlag==2 && (HAL_GPIO_ReadPin( GPIOA,  GPIO_PIN_0)==1)){
-		printf("OFF START");
+	
 	offFlag=1;
 	curTime=HAL_GetTick()	;
 	offFlag_2=1;
