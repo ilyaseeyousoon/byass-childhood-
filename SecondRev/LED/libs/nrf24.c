@@ -2,7 +2,7 @@
 
 
 #include "nrf24.h"
-
+#include <stdbool.h>
 
 // Read a register
 // input:
@@ -17,6 +17,13 @@ static uint8_t nRF24_ReadReg(uint8_t reg) {
 	nRF24_CSN_H();
 
 	return value;
+}
+
+
+bool testRPD(){
+
+return (nRF24_ReadReg(nRF24_REG_RPD)&1);
+
 }
 
 // Write a new value to register

@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "nrf24.h"
 #include "nrf24_hal.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,6 +42,9 @@ uint8_t payload_length=10;
 nRF24_RXResult pipe;
 uint8_t monitoreFlag=0;
 		uint8_t SerialModule[4];
+
+bool signalValid[126]={0};
+	
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -73,12 +77,12 @@ static void MX_USART1_UART_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1F, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1F, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1F, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1F, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1F, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1F, 0xE6 };
 		
 #define nRF24_WAIT_TIMEOUT         (uint32_t)0x000FFFFF
 
@@ -394,7 +398,7 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
     nRF24_DisableAA(0xFF);
 
     // Set RF channel
-    nRF24_SetRFChannel(115);
+    nRF24_SetRFChannel(95);
 
     // Set data rate
     nRF24_SetDataRate(nRF24_DR_1Mbps);
@@ -471,6 +475,24 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 //		HAL_Delay(1000);
 
 
+//for(uint8_t i=0;i<124;i++){
+//nRF24_SetRFChannel(i);
+
+// nRF24_SetOperationalMode(nRF24_MODE_RX);
+//		
+//  nRF24_ClearIRQFlags();
+//	
+//    // Wake the transceiver
+//    nRF24_SetPowerMode(nRF24_PWR_UP);
+
+//    // Put the transceiver to the RX mode
+//   // nRF24_CE_H();
+//		HAL_Delay(50);
+
+//signalValid[i]=testRPD();
+
+
+//}
 
 
 		    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
@@ -496,6 +518,11 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 		monitoreFlag=0;
 	}
 }
+	
+	
+	
+	
+	
 	
 	
     /* USER CODE END WHILE */

@@ -4,7 +4,7 @@
 
 // Low level functions (hardware depended)
 #include "nrf24_hal.h"
-
+#include <stdbool.h>
 
 // nRF24L0 instruction definitions
 #define nRF24_CMD_R_REGISTER       (uint8_t)0x00 // Register read
@@ -212,6 +212,8 @@ void nRF24_ClosePipe(uint8_t pipe);
 void nRF24_EnableAA(uint8_t pipe);
 void nRF24_DisableAA(uint8_t pipe);
 
+bool testRPD();
+	
 uint8_t nRF24_GetStatus(void);
 uint8_t nRF24_GetIRQFlags(void);
 uint8_t nRF24_GetStatus_RXFIFO(void);

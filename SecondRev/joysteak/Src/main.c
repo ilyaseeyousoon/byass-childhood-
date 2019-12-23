@@ -59,12 +59,12 @@ uint16_t zero_point_Y=0;
 uint16_t data_0_200[2];
 
 
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1F, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1F, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1F, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1F, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1F, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1F, 0xE6 };
 		
 #define  _MotorPwmDevider 20
 #define  _MotorPwmPeriod 100
@@ -346,7 +346,7 @@ printf("\r\nSTM32F103RET6 is online.\r\n");
 		  nRF24_DisableAA(0xFF);
 
     // Set RF channel
-    nRF24_SetRFChannel(115);
+    nRF24_SetRFChannel(95);
 
     // Set data rate
     nRF24_SetDataRate(nRF24_DR_1Mbps);
@@ -417,8 +417,13 @@ zero_point_Y=ADC_BUF_8b[2]*256+ADC_BUF_8b[3];
 		Ident[6]=data_0_200[1]>>8;
 		Ident[7]=data_0_200[1];
 		Ident[8]=0;
-		Ident[9]=HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1);
-		
+				
+		if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_1)==GPIO_PIN_SET)
+		{
+			Ident[9]=1;
+		}
+		else
+			Ident[9]=0;
 		
     	// Transmit a packet
     	tx_res = nRF24_TransmitPacket(Ident, payload_length);
@@ -662,6 +667,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+
+
 
   /*Configure GPIO pins : PA3 PA4 */
   GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;

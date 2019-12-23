@@ -1,20 +1,6 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
+
   */
 /* USER CODE END Header */
 
@@ -30,15 +16,9 @@
 /* USER CODE BEGIN PTD */
 
 
-
-
-	
-
-		uint8_t Ident[10]={4,0,0,0,0,0,0,0,0,0};
 		uint8_t temp_buf[10]={0};	
 		uint8_t nRF24_payload[32]={0};
 		uint32_t temp_dist=0;
-		uint8_t i=0;
 		uint8_t test=100;
 		extern uint8_t SerialModule[4];
 		
@@ -144,7 +124,6 @@ OnAction();
 static VL53L0X_Dev_t device;
 static volatile uint16_t res = 0;
 
-		    // ???????
     device.I2cHandle=&hi2c1;
     device.I2cDevAddr=0x52;                                                   
     device.Present=0;
@@ -166,79 +145,16 @@ static volatile uint16_t res = 0;
  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 
  
-     // RX/TX disabled
-    nRF24_CE_L();
-		
-//		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
-//			 HAL_Delay(2000);
-//		 	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
-
-		
- 
-		
-    while (!nRF24_Check()) {
- 
-			HAL_Delay(1000);
-    }
-		
-
-//		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3,GPIO_PIN_SET);
-		  // Initialize the nRF24L01 to its default state
-    nRF24_Init();
-		
-		
-    // Disable ShockBurst for all RX pipes
-    nRF24_DisableAA(0xFF);
-
-    // Set RF channel
-    nRF24_SetRFChannel(115);
-
-    // Set data rate
-    nRF24_SetDataRate(nRF24_DR_1Mbps);
-
-    // Set CRC scheme
-    nRF24_SetCRCScheme(nRF24_CRC_2byte);
-
-    // Set address width, its common for all pipes (RX and TX)
-    nRF24_SetAddrWidth(5);
-
-    // Configure RX PIPE#0
-
-    nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
-		nRF24_SetAddr(nRF24_PIPE1, nRF24_ADDR1); // program address for RX pipe #1
-		nRF24_SetAddr(nRF24_PIPE2, nRF24_ADDR2); // program address for RX pipe #2
-		nRF24_SetAddr(nRF24_PIPE3, nRF24_ADDR3); // program address for RX pipe #3
-		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
-		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
-    //nRF24_SetRXPipe(nRF24_PIPE0, nRF24_AA_OFF, 6); 
-		nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_OFF, 10); 
-		//nRF24_SetRXPipe(nRF24_PIPE2, nRF24_AA_OFF, 6); 
-		//nRF24_SetRXPipe(nRF24_PIPE3, nRF24_AA_OFF, 6); 
-		//nRF24_SetRXPipe(nRF24_PIPE4, nRF24_AA_OFF, 6); 
-		//nRF24_SetRXPipe(nRF24_PIPE5, nRF24_AA_OFF, 6); 
-
-
-// nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_ON, 10); // Auto-ACK: enabled, payload length: 10 bytes
- 
-    // Set operational mode (PRX == receiver)
-    nRF24_SetOperationalMode(nRF24_MODE_RX);
-		
-  nRF24_ClearIRQFlags();
-	
-    // Wake the transceiver
-    nRF24_SetPowerMode(nRF24_PWR_UP);
-
-    // Put the transceiver to the RX mode
-    nRF24_CE_H();
+ NRF_tuning();
 		
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
+{
 
-		for( i=0;i<2;i++){
+		for( uint8_t i=0;i<2;i++){
 			
 			        Status=VL53L0X_GetMeasurementDataReady(&device, &data_ready);
         
@@ -255,11 +171,8 @@ static volatile uint16_t res = 0;
 				
 	temp_dist+=result.RangeMilliMeter/10;
 				
-				
-				
-				
 			}
-		temp_buf[4]=temp_dist/10;		
+		temp_buf[4]=temp_dist/2-1;		
 			
 			if(result.RangeStatus==0){
 			
@@ -272,7 +185,6 @@ static volatile uint16_t res = 0;
 TransmitComand(4,temp_buf);
 	
 temp_dist	=0;		
-				//HAL_Delay(1000);
 				
     /* USER CODE END WHILE */
 

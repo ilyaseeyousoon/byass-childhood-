@@ -1,5 +1,6 @@
 gy-530\robik.o: ..\libs\RobikLib\Robik.c
 gy-530\robik.o: ..\libs\RobikLib\Robik.h
+gy-530\robik.o: ..\libs\ranging_vl53l0x.h
 gy-530\robik.o: ../Inc/main.h
 gy-530\robik.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 gy-530\robik.o: ../Inc/stm32f1xx_hal_conf.h
@@ -29,7 +30,6 @@ gy-530\robik.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
 gy-530\robik.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 gy-530\robik.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 gy-530\robik.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
-gy-530\robik.o: ..\libs\ranging_vl53l0x.h
 gy-530\robik.o: ..\libs\vl53l0x_api.h
 gy-530\robik.o: ..\libs\vl53l0x_api_strings.h
 gy-530\robik.o: ..\libs\vl53l0x_def.h

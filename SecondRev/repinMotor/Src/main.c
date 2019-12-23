@@ -71,12 +71,12 @@ static void MX_SPI2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
-    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1C, 0xE1};
-		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1C, 0xE2 };
-		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1C, 0xE3 };
-		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1C, 0xE4 };
-		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1C, 0xE5 };
-		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1C, 0xE6 };
+    static const uint8_t nRF24_ADDR0[] = { 0x01,0x01,0xE7, 0x1F, 0xE1};
+		static const uint8_t nRF24_ADDR1[] = {  0x01,0x01,0xE7, 0x1F, 0xE2 };
+		static const uint8_t nRF24_ADDR2[] = {  0x01,0x01,0xE7, 0x1F, 0xE3 };
+		static const uint8_t nRF24_ADDR3[] = {  0x01,0x01,0xE7, 0x1F, 0xE4 };
+		static const uint8_t nRF24_ADDR4[] = {  0x01,0x01,0xE7, 0x1F, 0xE5 };
+		static const uint8_t nRF24_ADDR5[] = {  0x01,0x01,0xE7, 0x1F, 0xE6 };
 		
 		
 		
@@ -262,7 +262,7 @@ uint8_t Ident[]={2,100,100,100,100,100,100,100,100,100};
     nRF24_SetOperationalMode(nRF24_MODE_TX);
     // Clear any pending IRQ flags
     nRF24_ClearIRQFlags();
-	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR2);
+	nRF24_SetAddr(nRF24_PIPETX, nRF24_ADDR4);
     // Wake the transceiver
     nRF24_SetPowerMode(nRF24_PWR_UP);
 	
@@ -395,7 +395,7 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
     nRF24_DisableAA(0xFF);
 
     // Set RF channel
-    nRF24_SetRFChannel(115);
+    nRF24_SetRFChannel(95);
 
     // Set data rate
     nRF24_SetDataRate(nRF24_DR_1Mbps);
@@ -438,14 +438,22 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 //__Set_Speed(50,1,1);		
 
   /* USER CODE END 2 */
-//__Set_Speed(30,1,1);	
+	
+
+
 //test_time=HAL_GetTick();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 		//__Set_Speed(99,0,1);		
+//	while(1){
+//	__Set_Speed(50,1,1);
+//HAL_Delay(3000);
 
+//__Set_Speed(50,0,1);
+//	
+//	}
 		    	if (nRF24_GetStatus_RXFIFO() != nRF24_STATUS_RXFIFO_EMPTY) { 
     		pipe = nRF24_ReadPayload(nRF24_payload, &payload_length);
 

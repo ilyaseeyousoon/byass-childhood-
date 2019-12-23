@@ -6,6 +6,11 @@
 	   	nRF24_TXResult tx_res;
 			uint8_t offFlag=0;
 		  uint32_t curTime=0;
+			
+			
+			uint8_t identNumber =distanceSensor;
+			 
+			 
 			extern I2C_HandleTypeDef hi2c1;
 			
 			
@@ -25,15 +30,8 @@
 		
 		
 		}
+
 		
-		
-		
-		
-	// Function to transmit data packet
-// input:
-//   pBuf - pointer to the buffer with data to transmit
-//   length - length of the data buffer in bytes
-// return: one of nRF24_TX_xx values
 nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 	volatile uint32_t wait = nRF24_WAIT_TIMEOUT;
 	uint8_t status;
@@ -94,7 +92,7 @@ nRF24_TXResult nRF24_TransmitPacket(uint8_t *pBuf, uint8_t length) {
 //1- iamhere 2- return data valid
 void TransmitComand (uint8_t comandIdent,uint8_t tempArr[payload_length]){
 
-	uint8_t Ident[]={4,100,100,100,100,100,100,100,100,100};
+	uint8_t Ident[]={identNumber,100,100,100,100,100,100,100,100,100};
 
 	Ident[1]=SerialModule[0];
 	Ident[2]=SerialModule[1];
@@ -116,8 +114,7 @@ void TransmitComand (uint8_t comandIdent,uint8_t tempArr[payload_length]){
 		
 			case 4:
 		Ident[4]=tempArr[4];
-			Ident[5]=tempArr[5
-			];
+		Ident[5]=tempArr[5];
 			
 		break;
 			
@@ -142,7 +139,7 @@ void TransmitComand (uint8_t comandIdent,uint8_t tempArr[payload_length]){
 
 
 void TransmitIdentification (){
-uint8_t Ident[]={2,100,100,100,100,100,100,100,100,100};
+uint8_t Ident[]={identNumber,100,100,100,100,100,100,100,100,100};
 
 
 	Ident[1]=SerialModule[0];
@@ -212,7 +209,63 @@ __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
 } 
 }
 
+void NRF_tuning (){
 
+     // RX/TX disabled
+    nRF24_CE_L();
+
+    while (!nRF24_Check()) {
+ 
+			HAL_Delay(1000);
+    }
+		
+		  // Initialize the nRF24L01 to its default state
+    nRF24_Init();
+		
+		
+    // Disable ShockBurst for all RX pipes
+    nRF24_DisableAA(0xFF);
+
+    // Set RF channel
+    nRF24_SetRFChannel(95);
+
+    // Set data rate
+    nRF24_SetDataRate(nRF24_DR_1Mbps);
+
+    // Set CRC scheme
+    nRF24_SetCRCScheme(nRF24_CRC_2byte);
+
+    // Set address width, its common for all pipes (RX and TX)
+    nRF24_SetAddrWidth(5);
+
+    // Configure RX PIPE#0
+
+    nRF24_SetAddr(nRF24_PIPE0, nRF24_ADDR0); // program address for RX pipe #0
+		nRF24_SetAddr(nRF24_PIPE1, nRF24_ADDR1); // program address for RX pipe #1
+		nRF24_SetAddr(nRF24_PIPE2, nRF24_ADDR2); // program address for RX pipe #2
+		nRF24_SetAddr(nRF24_PIPE3, nRF24_ADDR3); // program address for RX pipe #3
+		nRF24_SetAddr(nRF24_PIPE4, nRF24_ADDR4); // program address for RX pipe #4
+		nRF24_SetAddr(nRF24_PIPE5, nRF24_ADDR5); // program address for RX pipe #5
+
+
+
+		nRF24_SetRXPipe(nRF24_PIPE1, nRF24_AA_OFF, 10); 
+
+ 
+    // Set operational mode (PRX == receiver)
+    nRF24_SetOperationalMode(nRF24_MODE_RX);
+		
+    nRF24_ClearIRQFlags();
+	
+    // Wake the transceiver
+    nRF24_SetPowerMode(nRF24_PWR_UP);
+
+    // Put the transceiver to the RX mode
+    nRF24_CE_H();
+
+
+
+}
 
 
 
